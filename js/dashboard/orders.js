@@ -105,9 +105,16 @@
 
         try {
             const readKey = filterType + 'Orders';
-            // اللقطة اللحظية تعتبر مصدر البيانات حتى لو كانت القائمة فارغة؛
-            // لا نعيد طلب get_orders عند كل دخول لقسم الطلبات.
-            if (window.dashboardSocketReady || window.dashboardReadState[readKey]) return;
+            // اللقطة اللحظية تعتبر مصدر البيانات — إذا كانت القناة جاهزة أو تم القراءة مسبقاً،
+            // نعرض الكاش ونخرج دون طلب get_orders مجدداً.
+            if (window.dashboardSocketReady || window.dashboardReadState[readKey]) {
+                // تأكد من رسم الكاش الموجود إن لم يكن UI محدثاً
+                const storeOrders = window.AppStore ? window.AppStore.getOrders(filterType) : [];
+                if (storeOrders && storeOrders.length > 0 && isOrdersTabActive && container) {
+                    window.renderOrdersUI(storeOrders, filterType);
+                }
+                return;
+            }
             if (window.dashboardReadPromises[filterType + 'Orders']) return window.dashboardReadPromises[filterType + 'Orders'];
             window.dashboardReadPromises[readKey] = window.apiReq('get_orders', { filter: filterType }, 'POST', false, true);
             const res = await window.dashboardReadPromises[readKey];

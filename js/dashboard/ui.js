@@ -442,15 +442,27 @@
                     await window.loadLocalDashboardStats();
                 }
             } else if (tab === 'management') {
-                const realtimeReady = typeof window.ensureDashboardRealtime === 'function'
-                    ? await window.ensureDashboardRealtime()
-                    : false;
-                if (!realtimeReady) {
-                    if (typeof window.showT === 'function') {
-                        window.showT('بانتظار الاتصال اللحظي لتحميل المنتجات', 'warning');
+                // إذا كانت هناك بيانات محلية، اعرضها فوراً دون انتظار الاتصال اللحظي
+                const cachedProductsExist = window.AppStore && window.AppStore.getProducts().length > 0;
+
+                if (!cachedProductsExist) {
+                    // لا يوجد كاش — انتظر الاتصال اللحظي لجلب البيانات
+                    const realtimeReady = typeof window.ensureDashboardRealtime === 'function'
+                        ? await window.ensureDashboardRealtime()
+                        : false;
+                    if (!realtimeReady) {
+                        if (typeof window.showT === 'function') {
+                            window.showT('بانتظار الاتصال اللحظي لتحميل المنتجات', 'warning');
+                        }
+                        return;
                     }
-                    return;
+                } else {
+                    // يوجد بيانات كاش — تأكد من الاتصال في الخلفية دون انتظار
+                    if (typeof window.connectDashboardSocket === 'function' && !window.isDashboardRealtimeReady()) {
+                        window.connectDashboardSocket().catch(() => {});
+                    }
                 }
+
                 await Promise.all([
                     window.ModuleLoader.load('products'),
                     window.ModuleLoader.load('categories'),
@@ -528,8 +540,9 @@
                     window.renderOrdersUI(cachedOrders, currentFilter);
                 }
 
-                if (!window.dashboardSectionsInitialized.orders && typeof window.loadOrders === 'function') {
-                    window.dashboardSectionsInitialized.orders = true;
+                // استدعِ loadOrders دائماً عند فتح التبويب — الدالة نفسها تتحكم بمنطق
+                // تجنب الطلبات المكررة عبر dashboardSocketReady و dashboardReadState.
+                if (typeof window.loadOrders === 'function') {
                     window.loadOrders(currentFilter, activeTabBtn, true);
                 }
             } else if (tab === 'settings') {

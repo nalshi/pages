@@ -694,7 +694,7 @@
             : null;
 
         if (cached && cached.data) {
-            // بيانات حديثة موجودة محلياً → طبّقها بدون Worker request
+            // بيانات حديثة موجودة في sessionStorage → طبّقها بدون Worker request
             window.processDashboardSnapshot(cached.data);
             // تحديث الـ settings من الـ server إذا وُجدت في رسالة الاستئناف
             if (resumeMsg && resumeMsg.settings && typeof window.applySettingsToUI === 'function') {
@@ -706,9 +706,29 @@
                 window.ilsConnectionState('success', 'استُؤنفت الجلسة فوراً');
             }
         } else {
-            // لا يوجد كاش محلي رغم session_resume → الـ Worker سيرسل snapshot كاملة لاحقاً
-            // لا نفعل شيئاً، فقط نحدّث الحالة
-            window.setDashboardSocketStatus('connecting', 'جاري تحميل البيانات...');
+            // لا يوجد sessionStorage cache — نتحقق من localStorage cache للعرض الفوري
+            const hasLocalCache = Boolean(
+                localStorage.getItem('merchant_products_cache') ||
+                localStorage.getItem('merchant_settings_cache') ||
+                localStorage.getItem('merchant_active_orders_cache')
+            );
+
+            if (hasLocalCache) {
+                // يوجد localStorage cache → اعتبر الاتصال جاهزاً وأظهر اللوحة فوراً
+                // الـ Worker سيرسل snapshot كاملة لاحقاً وستُحدَّث البيانات تلقائياً
+                window.dashboardSnapshotLoaded = true;
+                window.dashboardSocketReady = true;
+                window.dashboardConnectionChecked = true;
+                window.appDataReady = true; // ضروري لكي تعمل tryRevealApp
+                window.setDashboardSocketStatus('connected');
+                if (typeof window.ilsConnectionState === 'function') {
+                    window.ilsConnectionState('success', 'جاري مزامنة البيانات...');
+                }
+                if (typeof window.tryRevealApp === 'function') window.tryRevealApp();
+            } else {
+                // لا يوجد أي كاش → انتظر snapshot كاملة من الـ Worker
+                window.setDashboardSocketStatus('connecting', 'جاري تحميل البيانات...');
+            }
         }
     };
 
@@ -822,8 +842,6 @@
                             }
                         } else if (msg.type === 'snapshot') {
                             window.dashboardSharedWorkerActive = true;
-                            // إذا كانت snapshot حديثة من الـ SharedWorker ذاكرته (snapshotAge صغير)
-                            // نطبّقها مباشرة دون انتظار
                             window.processDashboardSnapshot(msg.data);
                             if (window._swResolve) {
                                 window._swResolve(true);
