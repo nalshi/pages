@@ -7,6 +7,7 @@
 //  3. إخفاء تام لرابط الـ Worker الحقيقي وسر البوابة (Server-Side Only).
 //  4. فحص حجم ونوع البيانات ومنع هجمات حجب الخدمة (DoS Protection).
 //  5. عزل أمني صارم ومطابقة لنطاق المصدر (Same-Origin Isolation).
+//  6. دعم ترقية WebSocket بشكل نظيف عبر Cloudflare Pages.
 // ============================================================
 
 async function hmacSha256(secret, message) {
@@ -30,20 +31,87 @@ export async function onRequest(context) {
     return new Response(null, { status: 204 });
   }
 
-  // 2. حصر الطرق المسموح بها فقط
-  if (!['GET', 'POST', 'HEAD'].includes(request.method)) {
-    return new Response(JSON.stringify({ status: 'error', message: 'طريقة الطلب غير مسموح بها' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  // 3. التحقق من اكتمال الإعدادات بالسيرفر
+  // 2. التحقق من اكتمال الإعدادات بالسيرفر
   if (!env.WORKER_URL || !env.PROXY_SECRET) {
     console.error('Proxy misconfigured: missing WORKER_URL or PROXY_SECRET');
     return new Response(JSON.stringify({ status: 'error', message: 'بوابة الحماية قيد التحديث، يرجى المحاولة لاحقاً' }), {
       status: 503,
       headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const originalUrl = new URL(request.url);
+  // استخراج المسار الفرعي بعد /api/worker لتمريره بدقة للـ Worker (مثل /ws أو /stores/...)
+  const subpath = originalUrl.pathname.replace(/^\/api\/worker\/?/, '');
+  const cleanSubpath = subpath ? (subpath.startsWith('/') ? subpath : '/' + subpath) : '';
+  const targetUrl = env.WORKER_URL.replace(/\/$/, '') + cleanSubpath + originalUrl.search;
+
+  // ⚡⚡ مسار WebSocket المنفصل — ترقية كاملة بدون HMAC (لأن المتصفح لا يرسل headers مخصصة مع WS)
+  const isWebSocketUpgrade = request.headers.get('Upgrade')?.toLowerCase() === 'websocket';
+  if (isWebSocketUpgrade || cleanSubpath === '/ws') {
+    // التحقق الأمني: التوكن ومعرف التاجر موجودان في query params (يُتحقق منهما في Worker)
+    const token = originalUrl.searchParams.get('token');
+    const merchantId = originalUrl.searchParams.get('merchant_id');
+    if (!token || !merchantId) {
+      return new Response(JSON.stringify({ status: 'error', message: 'بيانات الاتصال غير مكتملة' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // بناء headers لطلب الـ WebSocket للـ Worker
+    const wsHeaders = new Headers();
+    wsHeaders.set('Upgrade', 'websocket');
+    wsHeaders.set('Connection', 'Upgrade');
+    // تمرير headers الأمان ليتحقق منها الـ Worker (إضافية للـ query params)
+    wsHeaders.set('X-Gateway-Secret', env.PROXY_SECRET);
+    wsHeaders.set('X-Forwarded-For', request.headers.get('CF-Connecting-IP') || '');
+    // نقل Sec-WebSocket headers إن وجدت
+    const secKey = request.headers.get('Sec-WebSocket-Key');
+    const secVer = request.headers.get('Sec-WebSocket-Version');
+    const secProto = request.headers.get('Sec-WebSocket-Protocol');
+    const secExt = request.headers.get('Sec-WebSocket-Extensions');
+    if (secKey) wsHeaders.set('Sec-WebSocket-Key', secKey);
+    if (secVer) wsHeaders.set('Sec-WebSocket-Version', secVer);
+    if (secProto) wsHeaders.set('Sec-WebSocket-Protocol', secProto);
+    if (secExt) wsHeaders.set('Sec-WebSocket-Extensions', secExt);
+
+    let wsResponse;
+    try {
+      wsResponse = await fetch(targetUrl, {
+        method: 'GET',
+        headers: wsHeaders,
+      });
+    } catch (e) {
+      console.error('WebSocket proxy fetch failed:', e);
+      return new Response(JSON.stringify({ status: 'error', message: 'تعذر إنشاء اتصال WebSocket' }), {
+        status: 502,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // ⚡ تمرير الـ WebSocket المُرقَّى للعميل مباشرة
+    if (wsResponse.status === 101 && wsResponse.webSocket) {
+      return new Response(null, {
+        status: 101,
+        webSocket: wsResponse.webSocket,
+      });
+    }
+
+    // إذا فشلت الترقية، أرجع الخطأ
+    const errText = await wsResponse.text().catch(() => '');
+    console.error('WebSocket upgrade failed, status:', wsResponse.status, errText);
+    return new Response(JSON.stringify({ status: 'error', message: 'فشل ترقية اتصال WebSocket' }), {
+      status: wsResponse.status || 502,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // 3. حصر الطرق المسموح بها فقط لطلبات HTTP العادية
+  if (!['GET', 'POST', 'HEAD'].includes(request.method)) {
+    return new Response(JSON.stringify({ status: 'error', message: 'طريقة الطلب غير مسموح بها' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 
@@ -94,12 +162,6 @@ export async function onRequest(context) {
 
   let workerResponse;
   try {
-    const originalUrl = new URL(request.url);
-    // استخراج المسار الفرعي بعد /api/worker لتمريره بدقة للـ Worker (مثل /ws أو /stores/...)
-    const subpath = originalUrl.pathname.replace(/^\/api\/worker\/?/, '');
-    const cleanSubpath = subpath ? (subpath.startsWith('/') ? subpath : '/' + subpath) : '';
-    const targetUrl = env.WORKER_URL.replace(/\/$/, '') + cleanSubpath + originalUrl.search;
-    
     workerResponse = await fetch(targetUrl, init);
   } catch (e) {
     console.error('Secure proxy fetch to worker failed:', e);
@@ -115,14 +177,6 @@ export async function onRequest(context) {
   responseHeaders.delete('vary');
   responseHeaders.set('X-Content-Type-Options', 'nosniff');
   responseHeaders.set('X-Frame-Options', 'DENY');
-
-  // ⚡ دعم تمرير الـ WebSocket (Upgrade: 101)
-  if (workerResponse.status === 101 && workerResponse.webSocket) {
-    return new Response(null, {
-      status: 101,
-      webSocket: workerResponse.webSocket
-    });
-  }
 
   const responseOptions = {
     status: workerResponse.status,
