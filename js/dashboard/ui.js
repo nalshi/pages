@@ -442,11 +442,12 @@
                     await window.loadLocalDashboardStats();
                 }
             } else if (tab === 'management') {
-                // إذا كانت هناك بيانات محلية، اعرضها فوراً دون انتظار الاتصال اللحظي
+                // التحقق من وجود بيانات في AppStore أو في localStorage
                 const cachedProductsExist = window.AppStore && window.AppStore.getProducts().length > 0;
+                const hasLocalStorageCache = Boolean(localStorage.getItem('merchant_products_cache'));
 
-                if (!cachedProductsExist) {
-                    // لا يوجد كاش — انتظر الاتصال اللحظي لجلب البيانات
+                if (!cachedProductsExist && !hasLocalStorageCache) {
+                    // لا يوجد أي كاش محلي — انتظر الاتصال اللحظي لجلب البيانات لأول مرة
                     const realtimeReady = typeof window.ensureDashboardRealtime === 'function'
                         ? await window.ensureDashboardRealtime()
                         : false;
@@ -457,9 +458,20 @@
                         return;
                     }
                 } else {
-                    // يوجد بيانات كاش — تأكد من الاتصال في الخلفية دون انتظار
+                    // يوجد بيانات محلية — اعرض فوراً وأكمل الاتصال في الخلفية
                     if (typeof window.connectDashboardSocket === 'function' && !window.isDashboardRealtimeReady()) {
                         window.connectDashboardSocket().catch(() => {});
+                    }
+                    // إذا كانت المنتجات في localStorage لكن لم تُحمَّل في AppStore بعد، احملها الآن
+                    if (!cachedProductsExist && hasLocalStorageCache) {
+                        try {
+                            const parsed = JSON.parse(localStorage.getItem('merchant_products_cache'));
+                            if (Array.isArray(parsed) && parsed.length > 0) {
+                                window.AppStore.setProducts(parsed);
+                                window.dashboardReadState = window.dashboardReadState || {};
+                                window.dashboardReadState.products = true;
+                            }
+                        } catch (e) { /* تجاهل خطأ الـ parse */ }
                     }
                 }
 
