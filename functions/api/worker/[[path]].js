@@ -46,7 +46,7 @@ export async function onRequest(context) {
   const cleanSubpath = subpath ? (subpath.startsWith('/') ? subpath : '/' + subpath) : '';
   const targetUrl = env.WORKER_URL.replace(/\/$/, '') + cleanSubpath + originalUrl.search;
 
-  // ⚡⚡ مسار WebSocket المنفصل — ترقية كاملة بدون HMAC (لأن المتصفح لا يرسل headers مخصصة مع WS)
+  // ⚡⚡ مسار WebSocket المنفصل — ترقية كاملة ومباشرة للـ Worker
   const isWebSocketUpgrade = request.headers.get('Upgrade')?.toLowerCase() === 'websocket';
   if (isWebSocketUpgrade || cleanSubpath === '/ws') {
     // التحقق الأمني: التوكن ومعرف التاجر موجودان في query params (يُتحقق منهما في Worker)
@@ -60,28 +60,33 @@ export async function onRequest(context) {
     }
 
     // بناء headers لطلب الـ WebSocket للـ Worker
-    const wsHeaders = new Headers();
+    const wsHeaders = new Headers(request.headers);
     wsHeaders.set('Upgrade', 'websocket');
     wsHeaders.set('Connection', 'Upgrade');
-    // تمرير headers الأمان ليتحقق منها الـ Worker (إضافية للـ query params)
     wsHeaders.set('X-Gateway-Secret', env.PROXY_SECRET);
     wsHeaders.set('X-Forwarded-For', request.headers.get('CF-Connecting-IP') || '');
-    // نقل Sec-WebSocket headers إن وجدت
-    const secKey = request.headers.get('Sec-WebSocket-Key');
-    const secVer = request.headers.get('Sec-WebSocket-Version');
-    const secProto = request.headers.get('Sec-WebSocket-Protocol');
-    const secExt = request.headers.get('Sec-WebSocket-Extensions');
-    if (secKey) wsHeaders.set('Sec-WebSocket-Key', secKey);
-    if (secVer) wsHeaders.set('Sec-WebSocket-Version', secVer);
-    if (secProto) wsHeaders.set('Sec-WebSocket-Protocol', secProto);
-    if (secExt) wsHeaders.set('Sec-WebSocket-Extensions', secExt);
+    if (request.headers.get('Origin')) {
+      wsHeaders.set('Origin', request.headers.get('Origin'));
+    }
 
-    let wsResponse;
     try {
-      wsResponse = await fetch(targetUrl, {
-        method: 'GET',
+      const wsResponse = await fetch(targetUrl, {
+        method: request.method || 'GET',
         headers: wsHeaders,
       });
+
+      // في Cloudflare Pages Functions، ترقية الـ 101 تُمرر مباشرة
+      if (wsResponse.status === 101) {
+        if (wsResponse.webSocket) {
+          return new Response(null, {
+            status: 101,
+            webSocket: wsResponse.webSocket,
+          });
+        }
+        return wsResponse;
+      }
+
+      return wsResponse;
     } catch (e) {
       console.error('WebSocket proxy fetch failed:', e);
       return new Response(JSON.stringify({ status: 'error', message: 'تعذر إنشاء اتصال WebSocket' }), {
@@ -89,22 +94,6 @@ export async function onRequest(context) {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-
-    // ⚡ تمرير الـ WebSocket المُرقَّى للعميل مباشرة
-    if (wsResponse.status === 101 && wsResponse.webSocket) {
-      return new Response(null, {
-        status: 101,
-        webSocket: wsResponse.webSocket,
-      });
-    }
-
-    // إذا فشلت الترقية، أرجع الخطأ
-    const errText = await wsResponse.text().catch(() => '');
-    console.error('WebSocket upgrade failed, status:', wsResponse.status, errText);
-    return new Response(JSON.stringify({ status: 'error', message: 'فشل ترقية اتصال WebSocket' }), {
-      status: wsResponse.status || 502,
-      headers: { 'Content-Type': 'application/json' },
-    });
   }
 
   // 3. حصر الطرق المسموح بها فقط لطلبات HTTP العادية
