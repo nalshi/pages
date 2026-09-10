@@ -132,6 +132,7 @@ if (fs.existsSync(functionsDir)) {
 const headersContent = `/*
   X-Content-Type-Options: nosniff
   Access-Control-Allow-Origin: *
+  Cache-Control: no-cache, no-store, must-revalidate
 
 /index.html
   Cache-Control: no-cache, no-store, must-revalidate
@@ -161,22 +162,22 @@ const headersContent = `/*
   Cache-Control: no-cache, no-store, must-revalidate
 
 /js/*
-  Cache-Control: public, max-age=300, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
 
 /css/*
-  Cache-Control: public, max-age=300, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
 
 /templates/*
-  Cache-Control: public, max-age=300, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
 
 /manifest.json
   Cache-Control: no-cache, no-store, must-revalidate
 
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
-
 /theme-config.json
   Cache-Control: no-cache, no-store, must-revalidate
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
 `;
 fs.writeFileSync(path.resolve(distDir, '_headers'), headersContent, 'utf8');
 fs.chmodSync(path.resolve(distDir, '_headers'), SAFE_FILE_MODE);
