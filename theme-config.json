@@ -1,0 +1,120 @@
+{
+  "version": "2.0",
+  "theme_name": "نالش العصري - الافتراضي",
+  "typography": {
+    "font_family": "Tajawal",
+    "base_size": "16px",
+    "heading_weight": "700",
+    "heading_font_family": "Tajawal"
+  },
+  "shapes": {
+    "card_radius": "20px",
+    "button_radius": "14px",
+    "button_style": "rounded",
+    "card_style": "elevated",
+    "navbar_style": "solid",
+    "section_spacing": "normal"
+  },
+  "navigation_settings": {
+    "bottom_bar": {
+      "items": [
+        { "id": "home", "label": "الرئيسية", "icon": "fa-home", "visible": true, "order": 1 },
+        { "id": "search", "label": "بحث", "icon": "fa-search", "visible": true, "order": 2 },
+        { "id": "orders", "label": "طلباتي", "icon": "fa-box-open", "visible": true, "order": 3 },
+        { "id": "favorites", "label": "المفضلة", "icon": "fa-heart", "visible": true, "order": 4 },
+        { "id": "cart", "label": "السلة", "icon": "fa-shopping-cart", "visible": true, "order": 5 }
+      ]
+    },
+    "top_bar": {
+      "show_logo_icon": true,
+      "logo_icon": "fa-store",
+      "show_dark_mode_btn": true,
+      "show_profile_btn": true,
+      "show_search_btn": true
+    }
+  },
+  "modes": {
+    "light": {
+      "colors": {
+        "primary": "#4F46E5",
+        "primary_hover": "#4338CA",
+        "primary_gradient_start": "#4F46E5",
+        "primary_gradient_end": "#06B6D4",
+        "accent": "#14B8A6",
+        "bg_body": "#F8FAFC",
+        "bg_card": "#FFFFFF",
+        "bg_surface": "#F1F5F9",
+        "text_main": "#0F172A",
+        "text_muted": "#64748B",
+        "border": "#E2E8F0",
+        "header_bg": "#FFFFFF",
+        "header_text": "#0F172A",
+        "bottom_nav_bg": "#FFFFFF",
+        "bottom_nav_active": "#4F46E5",
+        "bottom_nav_inactive": "#94A3B8",
+        "search_bg": "#F1F5F9",
+        "search_text": "#0F172A",
+        "search_placeholder": "#94A3B8",
+        "category_chip_bg": "#F1F5F9",
+        "category_chip_active_bg": "#4F46E5",
+        "category_chip_text": "#0F172A",
+        "category_chip_active_text": "#FFFFFF",
+        "modal_bg": "#FFFFFF",
+        "modal_overlay": "rgba(15, 23, 42, 0.6)",
+        "toast_success": "#10B981",
+        "toast_error": "#F43F5E",
+        "toast_warning": "#F59E0B",
+        "price_color": "#4F46E5",
+        "old_price_color": "#94A3B8",
+        "discount_badge_bg": "#EF4444",
+        "discount_badge_text": "#FFFFFF",
+        "button_primary_bg": "#4F46E5",
+        "button_primary_text": "#FFFFFF",
+        "button_secondary_bg": "#F1F5F9",
+        "button_secondary_text": "#0F172A",
+        "card_shadow": "0 4px 20px -2px rgba(0, 0, 0, 0.05)"
+      }
+    },
+    "dark": {
+      "colors": {
+        "primary": "#6366F1",
+        "primary_hover": "#818CF8",
+        "primary_gradient_start": "#6366F1",
+        "primary_gradient_end": "#2DD4BF",
+        "accent": "#2DD4BF",
+        "bg_body": "#0B1120",
+        "bg_card": "#151E2E",
+        "bg_surface": "#1E293B",
+        "text_main": "#F8FAFC",
+        "text_muted": "#94A3B8",
+        "border": "rgba(255, 255, 255, 0.08)",
+        "header_bg": "#151E2E",
+        "header_text": "#F8FAFC",
+        "bottom_nav_bg": "#151E2E",
+        "bottom_nav_active": "#6366F1",
+        "bottom_nav_inactive": "#64748B",
+        "search_bg": "#1E293B",
+        "search_text": "#F8FAFC",
+        "search_placeholder": "#64748B",
+        "category_chip_bg": "#1E293B",
+        "category_chip_active_bg": "#6366F1",
+        "category_chip_text": "#F8FAFC",
+        "category_chip_active_text": "#FFFFFF",
+        "modal_bg": "#151E2E",
+        "modal_overlay": "rgba(0, 0, 0, 0.75)",
+        "toast_success": "#10B981",
+        "toast_error": "#F43F5E",
+        "toast_warning": "#F59E0B",
+        "price_color": "#818CF8",
+        "old_price_color": "#64748B",
+        "discount_badge_bg": "#EF4444",
+        "discount_badge_text": "#FFFFFF",
+        "button_primary_bg": "#6366F1",
+        "button_primary_text": "#FFFFFF",
+        "button_secondary_bg": "#1E293B",
+        "button_secondary_text": "#F8FAFC",
+        "card_shadow": "0 4px 20px -2px rgba(0, 0, 0, 0.35)"
+      }
+    }
+  }
+}

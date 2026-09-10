@@ -1,0 +1,389 @@
+{
+  "version": 2,
+  "updated_at": "2026-09-10T16:35:16.350Z",
+  "count": 4,
+  "items": [
+    {
+      "id": "emerald",
+      "name": "زمردي طبيعي",
+      "description": "مظهر مريح للمنتجات الطبيعية.",
+      "category": "قوالب مخصصة",
+      "preview": {
+        "primary": "#059669",
+        "accent": "#10B981",
+        "background": "#F0FDF4"
+      },
+      "sourceFile": "/templates/themes/emerald.json",
+      "config": {
+        "light_theme": {
+          "colors": {
+            "primary": "#059669",
+            "primary_hover": "#047857",
+            "accent": "#10B981",
+            "bg_body": "#F0FDF4",
+            "bg_card": "#FFFFFF",
+            "text_main": "#064E3B",
+            "text_muted": "#047857",
+            "border": "#BBF7D0",
+            "navbar_bg": "#FFFFFF",
+            "bottom_bar_bg": "#FFFFFF",
+            "bottom_bar_active": "#059669",
+            "bottom_bar_inactive": "#6B7280",
+            "card_bg": "#FFFFFF",
+            "card_border": "#BBF7D0",
+            "price_color": "#059669",
+            "btn_primary_bg": "#059669",
+            "btn_primary_text": "#FFFFFF"
+          }
+        }
+      }
+    },
+    {
+      "id": "indigo",
+      "name": "إنديغو عصري",
+      "description": "ألوان نالش الرسمية.",
+      "category": "قوالب مخصصة",
+      "preview": {
+        "primary": "#4F46E5",
+        "accent": "#06B6D4",
+        "background": "#F8FAFC"
+      },
+      "sourceFile": "/templates/themes/indigo.json",
+      "config": {
+        "light_theme": {
+          "colors": {
+            "primary": "#4F46E5",
+            "primary_hover": "#4338CA",
+            "accent": "#06B6D4",
+            "bg_body": "#F8FAFC",
+            "bg_card": "#FFFFFF",
+            "text_main": "#0F172A",
+            "text_muted": "#64748B",
+            "border": "#E2E8F0",
+            "navbar_bg": "#FFFFFF",
+            "bottom_bar_bg": "#FFFFFF",
+            "bottom_bar_active": "#4F46E5",
+            "bottom_bar_inactive": "#94A3B8",
+            "card_bg": "#FFFFFF",
+            "card_border": "#E2E8F0",
+            "price_color": "#4F46E5",
+            "btn_primary_bg": "#4F46E5",
+            "btn_primary_text": "#FFFFFF"
+          }
+        }
+      }
+    },
+    {
+      "id": "luxury",
+      "name": "ذهبي فاخر",
+      "description": "هوية دافئة للمتاجر الراقية.",
+      "category": "قوالب مخصصة",
+      "preview": {
+        "primary": "#A16207",
+        "accent": "#D97706",
+        "background": "#FFFBEB"
+      },
+      "sourceFile": "/templates/themes/luxury.json",
+      "config": {
+        "light_theme": {
+          "colors": {
+            "primary": "#A16207",
+            "primary_hover": "#854D0E",
+            "accent": "#D97706",
+            "bg_body": "#FFFBEB",
+            "bg_card": "#FFFFFF",
+            "text_main": "#292524",
+            "text_muted": "#78716C",
+            "border": "#E7E5E4",
+            "navbar_bg": "#FFFFFF",
+            "bottom_bar_bg": "#FFFFFF",
+            "bottom_bar_active": "#A16207",
+            "bottom_bar_inactive": "#A8A29E",
+            "card_bg": "#FFFFFF",
+            "card_border": "#E7E5E4",
+            "price_color": "#A16207",
+            "btn_primary_bg": "#A16207",
+            "btn_primary_text": "#FFFFFF"
+          }
+        }
+      }
+    },
+    {
+      "id": "m",
+      "name": "MMMFMMMFMF",
+      "description": "تصميم جاهز قابل للتخصيص لمتجرك.",
+      "category": "قوالب مخصصة",
+      "preview": {
+        "primary": "#EA580C",
+        "accent": "#F97316",
+        "background": "#FFF7ED"
+      },
+      "sourceFile": "/templates/theme_m.json",
+      "config": {
+        "version": "4.0",
+        "theme_version": "4.0",
+        "theme_name": "sunset_coral",
+        "default_theme_mode": "light",
+        "products_settings": {
+          "display_mode": "featured_first",
+          "sort_by": "latest",
+          "out_of_stock_display": "badge_at_end",
+          "show_quick_add": true,
+          "show_stock_badge": true,
+          "show_discount_badge": true,
+          "show_category_tag": true,
+          "show_old_price": true,
+          "show_currency": true,
+          "show_actions": true,
+          "portrait": {
+            "grid_columns": 2,
+            "card_orientation": "portrait",
+            "card_style": "magazine"
+          },
+          "landscape": {
+            "grid_columns": 3,
+            "card_orientation": "landscape",
+            "card_style": "magazine"
+          },
+          "category_overrides": {}
+        },
+        "layout_blocks": [
+          {
+            "id": "block_hero_1",
+            "type": "hero",
+            "title": "أهلاً بكم في متجرنا",
+            "subtitle": "تسوق أحدث المنتجات بأفضل الأسعار وأعلى جودة مضمونة",
+            "style": "classic",
+            "visible": true,
+            "order": 1,
+            "settings": {
+              "cta_text": "تصفح المنتجات",
+              "cta_link": "#products",
+              "alignment": "center"
+            }
+          },
+          {
+            "id": "block_cat_1",
+            "type": "categories",
+            "title": "التصنيفات المميزة",
+            "style": "bubbles",
+            "visible": true,
+            "order": 2,
+            "settings": {
+              "layout": "horizontal"
+            }
+          },
+          {
+            "id": "block_prod_1",
+            "type": "products",
+            "title": "أحدث المنتجات والعروض",
+            "style": "classic_grid",
+            "visible": true,
+            "order": 3,
+            "settings": {
+              "limit": 12
+            }
+          },
+          {
+            "id": "block_feat_1",
+            "type": "features",
+            "title": "لماذا تختارنا؟",
+            "style": "badges_row",
+            "visible": true,
+            "order": 4,
+            "settings": {
+              "items": [
+                {
+                  "icon": "truck-fast",
+                  "title": "توصيل فائق السرعة",
+                  "desc": "توصيل موثوق لباب منزلك"
+                },
+                {
+                  "icon": "shield-check",
+                  "title": "ضمان الجودة 100%",
+                  "desc": "منتجات أصلية ومفحوصة بدقة"
+                },
+                {
+                  "icon": "headset",
+                  "title": "خدمة عملاء متواصلة",
+                  "desc": "دعم مباشر على مدار الساعة"
+                }
+              ]
+            }
+          }
+        ],
+        "light_theme": {
+          "colors": {
+            "primary": "#EA580C",
+            "primary_hover": "#C2410C",
+            "primary_gradient_start": "#EA580C",
+            "primary_gradient_end": "#FB923C",
+            "accent": "#F97316",
+            "bg_body": "#FFF7ED",
+            "bg_card": "#FFFFFF",
+            "bg_surface": "#FFEDD5",
+            "text_main": "#431407",
+            "text_muted": "#7C2D12",
+            "border": "#FED7AA",
+            "navbar_bg": "#FFFFFF",
+            "navbar_text": "#431407",
+            "bottom_bar_bg": "#FFFFFF",
+            "bottom_bar_active": "#EA580C",
+            "bottom_bar_inactive": "#7C2D12",
+            "card_bg": "#FFFFFF",
+            "card_border": "#FED7AA",
+            "card_title": "#431407",
+            "price_color": "#EA580C",
+            "old_price_color": "#7C2D12",
+            "badge_bg": "#DC2626",
+            "badge_text": "#FFFFFF",
+            "section_title": "#431407",
+            "category_chip_bg": "#FFEDD5",
+            "category_chip_active": "#EA580C",
+            "category_chip_text": "#431407",
+            "modal_bg": "#FFFFFF",
+            "modal_overlay": "rgba(67, 20, 7, 0.6)",
+            "modal_handle": "#FED7AA",
+            "btn_primary_bg": "#EA580C",
+            "btn_primary_text": "#FFFFFF",
+            "chatbot_btn_bg": "#EA580C"
+          }
+        },
+        "dark_theme": {
+          "colors": {
+            "primary": "#FB923C",
+            "primary_hover": "#FDBA74",
+            "primary_gradient_start": "#FB923C",
+            "primary_gradient_end": "#EA580C",
+            "accent": "#F97316",
+            "bg_body": "#1C0B04",
+            "card_bg": "#361608",
+            "bg_card": "#361608",
+            "bg_surface": "#4D2210",
+            "text_main": "#FFF7ED",
+            "text_muted": "#FED7AA",
+            "border": "#7C2D12",
+            "navbar_bg": "#361608",
+            "navbar_text": "#FFF7ED",
+            "bottom_bar_bg": "#361608",
+            "bottom_bar_active": "#FB923C",
+            "bottom_bar_inactive": "#FED7AA",
+            "card_border": "#7C2D12",
+            "card_title": "#FFF7ED",
+            "price_color": "#FB923C",
+            "old_price_color": "#FED7AA",
+            "badge_bg": "#EA580C",
+            "badge_text": "#FFFFFF",
+            "section_title": "#FFF7ED",
+            "category_chip_bg": "#4D2210",
+            "category_chip_active": "#FB923C",
+            "category_chip_text": "#FFF7ED",
+            "modal_bg": "#361608",
+            "modal_overlay": "rgba(0, 0, 0, 0.85)",
+            "modal_handle": "#7C2D12",
+            "btn_primary_bg": "#FB923C",
+            "btn_primary_text": "#1C0B04",
+            "chatbot_btn_bg": "#FB923C"
+          }
+        },
+        "typography": {
+          "font_family": "Changa",
+          "base_size": "16px",
+          "base_size_mobile": "15px",
+          "base_size_desktop": "17px",
+          "heading_weight": "800",
+          "heading_size_mobile": "1.15rem",
+          "heading_size_desktop": "1.45rem",
+          "price_size_mobile": "1.1rem",
+          "price_size_desktop": "1.25rem",
+          "headings": {
+            "price_size": "1.15rem"
+          }
+        },
+        "shapes": {
+          "card_radius": "16px",
+          "button_radius": "10px",
+          "button_style": "rounded",
+          "card_style": "elevated",
+          "navbar_style": "solid",
+          "section_spacing": "normal"
+        },
+        "animations": {
+          "card_hover": "lift"
+        },
+        "marketing": {
+          "free_shipping_bar": {
+            "enabled": false,
+            "message": "🚚 شحن مجاني للطلبات فوق 10,000 ريال!"
+          },
+          "whatsapp_floating": {
+            "enabled": true,
+            "position": "left"
+          }
+        },
+        "navigation_settings": {
+          "bottom_bar": {
+            "items": [
+              {
+                "id": "home",
+                "label": "الرئيسية",
+                "icon": "fa-home",
+                "visible": true,
+                "order": 1
+              },
+              {
+                "id": "search",
+                "label": "بحث",
+                "icon": "fa-search",
+                "visible": false,
+                "order": 2
+              },
+              {
+                "id": "orders",
+                "label": "طلباتي",
+                "icon": "fa-box-open",
+                "visible": true,
+                "order": 3
+              },
+              {
+                "id": "favorites",
+                "label": "المفضلة",
+                "icon": "fa-heart",
+                "visible": false,
+                "order": 4
+              },
+              {
+                "id": "cart",
+                "label": "السلة",
+                "icon": "fa-shopping-cart",
+                "visible": true,
+                "order": 5
+              }
+            ],
+            "style_settings": {
+              "solid": {
+                "height": 88,
+                "radius": 26,
+                "bar_color": "#707070"
+              }
+            }
+          },
+          "top_bar": {
+            "show_logo_icon": true,
+            "logo_icon": "fa-store",
+            "show_dark_mode_btn": true,
+            "show_profile_btn": true,
+            "show_search_btn": true
+          }
+        },
+        "assistant": {
+          "enabled": true,
+          "name": "المستشار",
+          "behavior_mode": "concierge",
+          "conversation_style": "detailed",
+          "button_style": "bubble"
+        }
+      }
+    }
+  ]
+}

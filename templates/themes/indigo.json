@@ -1,0 +1,34 @@
+{
+  "id": "indigo",
+  "name": "إنديغو عصري",
+  "description": "ألوان نالش الرسمية.",
+  "category": "قوالب مخصصة",
+  "preview": {
+    "primary": "#4F46E5",
+    "accent": "#06B6D4",
+    "background": "#F8FAFC"
+  },
+  "config": {
+    "light_theme": {
+      "colors": {
+        "primary": "#4F46E5",
+        "primary_hover": "#4338CA",
+        "accent": "#06B6D4",
+        "bg_body": "#F8FAFC",
+        "bg_card": "#FFFFFF",
+        "text_main": "#0F172A",
+        "text_muted": "#64748B",
+        "border": "#E2E8F0",
+        "navbar_bg": "#FFFFFF",
+        "bottom_bar_bg": "#FFFFFF",
+        "bottom_bar_active": "#4F46E5",
+        "bottom_bar_inactive": "#94A3B8",
+        "card_bg": "#FFFFFF",
+        "card_border": "#E2E8F0",
+        "price_color": "#4F46E5",
+        "btn_primary_bg": "#4F46E5",
+        "btn_primary_text": "#FFFFFF"
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "categories": [
+    { "id": "themes", "file": "themes.json", "label": "الألوان والثيمات" },
+    { "id": "fonts", "file": "fonts.json", "label": "الخطوط" },
+    { "id": "layouts", "file": "layouts.json", "label": "تخطيط المنتجات" },
+    { "id": "navigation", "file": "navigation.json", "label": "التنقل" },
+    { "id": "bots", "file": "bots.json", "label": "الروبوتات" }
+  ],
+  "theme_files": [
+    { "id": "indigo", "file": "themes/indigo.json" },
+    { "id": "luxury", "file": "themes/luxury.json" },
+    { "id": "emerald", "file": "themes/emerald.json" }
+  ],
+  "presets": [
+    {
+      "id": "modern-store",
+      "name": "متجر عصري",
+      "description": "تركيبة سريعة ومتوازنة للمتاجر العامة.",
+      "selections": { "theme": "indigo", "font": "tajawal", "layout": "grid-3", "navigation": "bottom-bar", "bot": "sales" }
+    },
+    {
+      "id": "luxury-store",
+      "name": "متجر فاخر",
+      "description": "ألوان هادئة وخط أنيق وتجربة عرض راقية.",
+      "selections": { "theme": "luxury", "font": "readex", "layout": "magazine", "navigation": "floating", "bot": "concierge" }
+    },
+    {
+      "id": "emerald-store",
+      "name": "متجر طبيعي",
+      "description": "واجهة عضوية هادئة للمنتجات الطبيعية والصحية.",
+      "selections": { "theme": "emerald", "font": "cairo", "layout": "compact", "navigation": "bottom-bar", "bot": "wellness" }
+    }
+  ]
+}

@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تسجيل الدخول | نالش</title>
+    <meta name="description" content="سجل دخولك إلى حسابك في نالش كتاجر توصيل وابدأ في إدارة أعمالك ومبيعاتك.">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/all.min.css" media="print" onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        (function checkAutoLogin() {
+            let token = localStorage.getItem('merchant_token') || sessionStorage.getItem('merchant_token');
+            if (token) {
+                try {
+                    let payload = JSON.parse(atob(token.split('.')[1]));
+                    if (payload.exp * 1000 > Date.now()) {
+                        const redirectUrl = payload.role === 'merchant' ? 'merchant-app.html' : 'delivery-dashboard.html';
+                        window.location.replace(redirectUrl);
+                        return;
+                    } else {
+                        localStorage.removeItem('merchant_token');
+                        sessionStorage.removeItem('merchant_token');
+                    }
+                } catch (e) {
+                    localStorage.removeItem('merchant_token');
+                    sessionStorage.removeItem('merchant_token');
+                }
+            }
+            document.documentElement.classList.add('allow-render');
+        })();
+    </script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-glow: rgba(37, 99, 235, 0.25);
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #f8fafc;
+                --card-bg: #ffffff;
+                --text-main: #0f172a;
+                --text-muted: #64748b;
+                --border: #e2e8f0;
+                --input-bg: #f1f5f9;
+                --chip-bg: #f1f5f9;
+                --overlay: rgba(255, 255, 255, 0.9);
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a;
+                --card-bg: #1e293b;
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --border: #334155;
+                --input-bg: #0f172a;
+                --chip-bg: #0f172a;
+                --overlay: rgba(15, 23, 42, 0.9);
+            }
+        }
+
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --input-bg: #f1f5f9;
+            --chip-bg: #f1f5f9;
+            --overlay: rgba(255, 255, 255, 0.9);
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --input-bg: #0f172a;
+            --chip-bg: #0f172a;
+            --overlay: rgba(15, 23, 42, 0.9);
+        }
+
+        html:not(.allow-render) body {
+            display: none !important;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 999999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #preloader.hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .brand-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-logo h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .brand-logo h2 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 8px;
+            margin-top: 5px;
+            margin-right: -8px;
+            opacity: 0.8;
+        }
+
+        .brand-logo::after {
+            content: '';
+            width: 40px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+            display: block;
+            margin: 15px auto 0;
+        }
+
+        .loader-bar {
+            width: 150px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loader-bar::after {
+            content: '';
+            position: absolute;
+            left: -50px;
+            top: 0;
+            height: 100%;
+            width: 50px;
+            background: var(--primary);
+            border-radius: 4px;
+            animation: loadingBar 1s ease-in-out infinite;
+        }
+
+        @keyframes loadingBar {
+            0% { left: -50px; }
+            100% { left: 150px; }
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .state-view {
+            display: none;
+            opacity: 0;
+        }
+
+        .state-view.active {
+            display: block;
+            opacity: 1;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 16px;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            z-index: 2;
+            transition: color 0.2s;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 18px 14px 40px;
+            border-radius: 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .input-field.has-icon {
+            padding-right: 45px;
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+            background: var(--card-bg);
+        }
+
+        .input-wrapper:focus-within i {
+            color: var(--primary);
+        }
+
+        .input-field.error {
+            border-color: var(--danger);
+            animation: shake 0.3s both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+            40%, 60% { transform: translate3d(3px, 0, 0); }
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-main:hover:not(:disabled) {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-main:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-link:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
+        .spinner {
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .otp-container {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+            direction: ltr;
+        }
+
+        .otp-box {
+            width: 50px;
+            height: 55px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-align: center;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+            padding: 0;
+        }
+
+        .otp-box:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+            background: var(--card-bg);
+            transform: translateY(-2px);
+        }
+
+        .otp-box.filled {
+            border-color: var(--primary);
+        }
+
+        .otp-box:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .otp-box.verifying {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .otp-box.success {
+            border-color: var(--success);
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .otp-box.error {
+            border-color: var(--danger);
+            color: var(--danger);
+            animation: shake 0.3s both;
+        }
+
+        .role-btn {
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            text-align: right;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+
+        .role-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .role-btn .r-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: var(--card-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.4rem;
+            color: var(--primary);
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        .role-btn:hover .r-icon {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .role-btn div { flex: 1; }
+        .role-btn strong { font-size: 1.1rem; display: block; font-weight: 800; margin-bottom: 4px;}
+        .role-btn span { color: var(--text-muted); font-size: 0.85rem; font-weight: 600;}
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .cat-chip {
+            background: var(--chip-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cat-chip i {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            transition: color 0.2s ease;
+        }
+
+        .cat-chip:hover {
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+
+        .cat-chip:hover i {
+            color: var(--primary);
+        }
+
+        .cat-chip.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .cat-chip.active i {
+            color: #ffffff;
+        }
+
+        #inp-reg-type-other {
+            margin-top: 12px;
+            display: none;
+        }
+
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 14px 24px;
+            border-radius: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+            font-size: 0.95rem;
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .identity-badge {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .identity-badge i {
+            font-size: 1.8rem;
+            color: var(--primary);
+            background: var(--card-bg);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .identity-badge div { text-align: right; }
+        .identity-badge h3 { font-size: 1.15rem; font-weight: 800; margin:0 0 4px 0; color: var(--text-main); }
+        .identity-badge p { font-size: 0.85rem; color: var(--text-muted); margin:0; font-weight: 600;}
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .remember-me label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .terms-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .terms-link {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--overlay);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.show { display: flex; }
+
+        .modal-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-main); }
+        .modal-close {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+        .modal-body {
+            padding: 25px;
+            overflow-y: auto;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.8;
+            font-weight: 600;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--border);
+        }
+
+        .pwa-banner {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            border: 1px solid var(--primary);
+            padding: 15px 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 100000;
+            transition: bottom 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            width: max-content;
+            max-width: 90vw;
+        }
+
+        .pwa-banner.show { bottom: 30px; }
+        .pwa-banner span { color: var(--text-main); font-weight: 800; font-size: 0.9rem; }
+        .pwa-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .pwa-close { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.2rem; }
+
+        @media (max-width: 480px) {
+            .main-card { padding: 30px 20px; border-radius: 20px; }
+            .brand-logo h1 { font-size: 3rem; }
+            .input-field { padding: 12px 16px 12px 35px; font-size: 0.95rem; }
+            .btn-main { padding: 14px; font-size: 1rem; }
+            .otp-box { width: 45px; height: 50px; font-size: 1.3rem; }
+            .role-btn { padding: 14px; }
+        }
+body {
+        -webkit-touch-callout: none !important;
+        -webkit-user-select: none !important;
+        -khtml-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+    }
+    input, textarea {
+        -webkit-touch-callout: default !important;
+        -webkit-user-select: text !important;
+        -khtml-user-select: text !important;
+        -moz-user-select: text !important;
+        -ms-user-select: text !important;
+        user-select: text !important;
+    }        
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="brand-logo">
+            <h1 class="brand-ar">نالش</h1>
+            <h2 class="brand-en">NALSH</h2>
+        </div>
+        <div class="loader-bar"></div>
+    </div>
+
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div id="toast"><i id="toast-icon"></i><span id="toast-msg"></span></div>
+
+    <div class="main-card">
+        <div class="brand-logo">
+            <h1 class="brand-ar">نالش</h1>
+            <h2 class="brand-en">NALSH</h2>
+        </div>
+
+        <input type="hidden" id="global-identifier" value="">
+        <input type="hidden" id="global-phone" value="">
+        <input type="hidden" id="global-context" value="login">
+        <input type="hidden" id="global-remember" value="false">
+        <input type="hidden" id="global-state-token" value="">
+
+        <div id="state-identifier" class="state-view active">
+            <div class="input-group">
+                <label>رقم الجوال أو اسم المستخدم</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="inp-identifier" class="input-field has-icon" placeholder="أدخل رقمك أو اسم المستخدم" autofocus dir="ltr" style="text-align: right;">
+                </div>
+            </div>
+            <button class="btn-main" onclick="handleIdentifierSubmit(this)">
+                <span class="text">متابعة الأمان</span>
+                <i class="fas fa-arrow-left text"></i>
+                <div class="spinner"></div>
+            </button>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-link" onclick="switchState('state-register')">ليس لديك متجر؟ ابدأ تجارتك الآن</button>
+            </div>
+        </div>
+
+        <div id="state-password" class="state-view">
+            <div class="identity-badge" id="identity-display">
+                <i class="fas fa-user-check"></i>
+                <div>
+                    <h3 id="display-user-name">مرحباً بك</h3>
+                    <p>أدخل كلمة المرور للمتابعة</p>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>كلمة المرور</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="inp-password" class="input-field has-icon" placeholder="••••••••" dir="ltr" style="text-align: right;">
+                </div>
+            </div>
+            <div class="remember-me" style="display: none;">
+                <input type="checkbox" id="inp-remember-me" checked>
+                <label for="inp-remember-me">تذكرني للحفاظ على تسجيل الدخول</label>
+            </div>
+            <button class="btn-main" onclick="handleLoginSubmit(this)">
+                <span class="text">تسجيل الدخول</span>
+                <i class="fas fa-sign-in-alt text"></i>
+                <div class="spinner"></div>
+            </button>
+            <div style="text-align: center; margin-top: 20px; display: flex; justify-content: center; gap: 15px;">
+                <button class="btn-link" onclick="handleForgotPasswordInit()">نسيت كلمة المرور؟</button>
+                <span style="color: var(--border);">|</span>
+                <button class="btn-link" onclick="switchState('state-identifier')" style="color: var(--text-muted);">رجوع</button>
+            </div>
+        </div>
+        
+        <div id="state-role-selection" class="state-view">
+             <div style="text-align: center; margin-bottom: 25px;">
+                <i class="fas fa-users-cog" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i>
+                <h3 style="font-weight: 800; font-size: 1.3rem;">تحديد الحساب</h3>
+                <p style="color: var(--text-muted); font-weight: 600; margin-top: 5px;">لديك أكثر من حساب. اختر واجهة الدخول.</p>
+            </div>
+            <div id="role-options-container"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-link" onclick="switchState('state-identifier')" style="color: var(--text-muted);">إلغاء والعودة</button>
+            </div>
+        </div>
+
+        <div id="state-register" class="state-view">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h3 style="font-weight: 900; font-size: 1.4rem; color: var(--primary);">إنشاء متجر جديد</h3>
+                <p style="color: var(--text-muted); font-weight: 600; font-size: 0.9rem; margin-top: 5px;">أكمل البيانات لإطلاق متجرك الإلكتروني.</p>
+            </div>
+            
+            <div class="input-group">
+                <label>رقم الجوال (للواتساب والطلبات)</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-phone"></i>
+                    <input type="tel" id="inp-reg-phone" class="input-field has-icon" placeholder="77XXXXXXX" maxlength="9" dir="ltr" style="text-align: right;">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>اسم المتجر (البراند)</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-store"></i>
+                    <input type="text" id="inp-reg-name" class="input-field has-icon" placeholder="مثال: متجر الأناقة">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>نوع النشاط (القسم) <span style="color:var(--danger)">*</span></label>
+                <input type="hidden" id="inp-reg-type" value="">
+                <div class="category-grid">
+                    <div class="cat-chip" onclick="selectCategory(this, 'مطاعم ومأكولات')"><i class="fas fa-utensils"></i> مطاعم</div>
+                    <div class="cat-chip" onclick="selectCategory(this, 'إلكترونيات وجوالات')"><i class="fas fa-mobile-alt"></i> إلكترونيات</div>
+                    <div class="cat-chip" onclick="selectCategory(this, 'أزياء وملابس')"><i class="fas fa-tshirt"></i> ملابس</div>
+                    <div class="cat-chip" onclick="selectCategory(this, 'سوبر ماركت وبقالة')"><i class="fas fa-shopping-basket"></i> سوبر ماركت</div>
+                    <div class="cat-chip" onclick="selectCategory(this, 'عطور وتجميل')"><i class="fas fa-spray-can"></i> عطور</div>
+                    <div class="cat-chip" onclick="selectCategory(this, 'صيدليات وأدوية')"><i class="fas fa-pills"></i> صيدلية</div>
+                    <div class="cat-chip" onclick="selectCategory(this, 'متنوع')"><i class="fas fa-cubes"></i> متنوع</div>
+                    <div class="cat-chip" onclick="selectCategory(this, 'other')"><i class="fas fa-plus"></i> أخرى</div>
+                </div>
+                <input type="text" id="inp-reg-type-other" class="input-field" placeholder="اكتب نوع النشاط هنا...">
+            </div>
+            
+            <div class="input-group">
+                <label>موقع المتجر (Google Maps) <span style="color:var(--danger)">*</span></label>
+                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                    <button type="button" class="btn-main" style="flex: 1; padding: 12px; margin: 0; font-size: 0.85rem; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border);" onclick="window.open('https://www.google.com/maps', '_blank')">
+                        <i class="fas fa-map-marked-alt text"></i> الخرائط
+                    </button>
+                    <button type="button" class="btn-main" style="width: auto; padding: 0 16px; margin: 0;" onclick="getLocationForRegistration(this)">
+                        <i class="fas fa-location-crosshairs text"></i>
+                    </button>
+                </div>
+                <div class="input-wrapper">
+                    <i class="fas fa-link"></i>
+                    <input type="url" id="inp-reg-location" class="input-field has-icon" placeholder="رابط خرائط جوجل..." dir="ltr" style="text-align: left;" oninput="validateMapUrl(this)">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>اسم المستخدم (رابط المتجر) <span style="color:var(--danger)">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-at"></i>
+                    <input type="text" id="inp-reg-username" class="input-field has-icon" placeholder="mystore_123" dir="ltr" style="text-align: left;" oninput="previewUsername(this)">
+                </div>
+                <div id="username-preview" style="display: none; margin-top: 10px; padding: 10px; background: var(--input-bg); border-radius: 10px; font-size: 0.85rem; direction: ltr; text-align: left; border: 1px dashed var(--border);">
+                    <i class="fas fa-globe" style="color: var(--primary); margin-right: 5px;"></i>
+                    <span id="username-text" style="color: var(--primary); font-weight: 800;"></span>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>كلمة المرور</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="inp-reg-password" class="input-field has-icon" placeholder="8 أحرف أو أرقام" dir="ltr" style="text-align: right;">
+                </div>
+            </div>
+            
+            <div class="remember-me" style="background: var(--input-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                <input type="checkbox" id="inp-terms">
+                <label for="inp-terms">أوافق على <button type="button" class="terms-link" onclick="openModal()">الشروط والأحكام</button></label>
+            </div>
+
+            <button class="btn-main" onclick="handleRegisterSubmit(this)">
+                <span class="text">إنشاء المتجر</span>
+                <i class="fas fa-store text"></i>
+                <div class="spinner"></div>
+            </button>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-link" onclick="switchState('state-identifier')" style="color: var(--text-muted);">لدي متجر بالفعل؟ الدخول</button>
+            </div>
+        </div>
+
+        <div id="state-otp" class="state-view">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <div style="width: 70px; height: 70px; background: rgba(16, 185, 129, 0.1); color: var(--success); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; margin: 0 auto 15px;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 style="font-weight: 900; font-size: 1.4rem;" id="otp-title">رمز التحقق</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;" id="otp-subtitle">أدخل الرمز المكون من 6 أرقام.</p>
+            </div>
+            
+            <div class="otp-container" id="otp-inputs">
+                <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+                <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+                <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+                <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+                <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+                <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+            </div>
+
+            <div style="text-align: center; margin-top: 15px; font-weight: 700; font-size: 0.9rem;">
+                <div id="resend-text" style="color: var(--text-muted);">
+                    إعادة الإرسال خلال: <span id="resend-timer" style="color: var(--primary); direction: ltr; display: inline-block;">02:00</span>
+                </div>
+                <button id="btn-resend-otp" class="btn-link" style="display: none; margin: 0 auto;" onclick="resendOtp()">إعادة إرسال الرمز <i class="fas fa-redo"></i></button>
+            </div>
+
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="btn-link" style="color: var(--text-muted);" onclick="switchState('state-identifier')">تعديل الرقم والعودة</button>
+            </div>
+        </div>
+
+        <div id="state-new-password" class="state-view">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <i class="fas fa-key" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i>
+                <h3 style="font-weight: 900; font-size: 1.4rem;">كلمة مرور جديدة</h3>
+                <p style="color: var(--text-muted); font-weight: 600; font-size: 0.9rem; margin-top: 5px;">اختر كلمة مرور قوية لحماية حسابك.</p>
+            </div>
+            <div class="input-group">
+                <label>كلمة المرور الجديدة</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="inp-new-password" class="input-field has-icon" placeholder="••••••••" dir="ltr" style="text-align: right;">
+                </div>
+            </div>
+             <div class="input-group">
+                <label>تأكيد كلمة المرور</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-check-double"></i>
+                    <input type="password" id="inp-confirm-password" class="input-field has-icon" placeholder="••••••••" dir="ltr" style="text-align: right;">
+                </div>
+            </div>
+            <button class="btn-main" onclick="handleSetNewPassword(this)">
+                <span class="text">حفظ وتأكيد</span>
+                <i class="fas fa-save text"></i>
+                <div class="spinner"></div>
+            </button>
+        </div>
+
+        <div class="terms-footer">
+            باستخدامك المنصة فإنك توافق على
+            <button type="button" class="terms-link" onclick="openModal()">الشروط والأحكام</button>
+        </div>
+    </div>
+
+    <div id="terms-modal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-contract" style="margin-left: 8px; color: var(--primary);"></i> الشروط والأحكام</h3>
+                <button type="button" class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <h4 style="color: var(--text-main); font-size: 1rem; margin-bottom: 15px;">الشرط الشامل لإخلاء المسؤولية والالتزام البرمجي (Code is Law)</h4>
+                <p style="margin-bottom: 15px;">يُقر ويوافق المستخدم موافقة صريحة ونهائية ومرفوعة عن الجهالة، بأن منصة نالش وتطبيقاتها هي أداة تقنية مستقلة تُقدّم "كما هي" و"حسب توفرها".</p>
+                <p style="margin-bottom: 15px;">النظام البرمجي للمنصة، وبنيتها الأكوادية، والقيود المحررة داخل النظام، هي المرجعية القانونية والتنفيذية الوحيدة والملزمة لكافة الأطراف.</p>
+                <p>لا تتحمل الإدارة أي مسؤولية قانونية أو مالية تجاه أي مستخدم عن أي تصرف غير قانوني. ويتحمل المستخدم العواقب الناتجة عن أي مخالفة. يُعد قبول هذا الشرط برمجياً إسقاطاً تاماً لأي حق في مقاضاة المنصة.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-main" style="margin-top:0;" onclick="closeModal()">فهمت وموافق</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pwa-banner" class="pwa-banner">
+        <span>ثبّت التطبيق لتجربة أسرع 🚀</span>
+        <button id="pwa-btn" class="pwa-btn">تثبيت</button>
+        <button id="pwa-close" class="pwa-close"><i class="fas fa-times"></i></button>
+    </div>
+
+<script>
+    let CSRF_TOKEN = ''; 
+    const API_URL = 'https://api.nalsh.dpdns.org/api.php';
+    let isPhoneIdentifier = false;
+    let otpTimerInterval; 
+    let isSubmittingOtp = false; 
+['contextmenu', 'selectstart', 'dragstart'].forEach(function(eventName) {
+        document.addEventListener(eventName, function(e) {
+            if (!e.target.closest('input, textarea')) { 
+                e.preventDefault(); 
+            }
+        }, { passive: false });
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if(
+            e.keyCode === 123 ||
+            (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) ||
+            (e.ctrlKey && e.keyCode === 85)
+        ) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.classList.add('hide');
+                setTimeout(() => preloader.style.display = 'none', 500);
+            }
+        }, 800);
+    });
+
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    function toggleTheme() {
+        const body = document.body;
+        const icon = document.querySelector('#theme-btn i');
+        const currentTheme = body.getAttribute('data-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        if (currentTheme === 'dark') {
+            body.setAttribute('data-theme', 'light');
+            icon.className = 'fas fa-sun';
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            icon.className = 'fas fa-moon';
+        }
+    }
+
+    (function initTheme() {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.setAttribute('data-theme', 'dark');
+            document.querySelector('#theme-btn i').className = 'fas fa-sun';
+        } else {
+            document.body.setAttribute('data-theme', 'light');
+            document.querySelector('#theme-btn i').className = 'fas fa-moon';
+        }
+    })();
+
+    async function apiRequest(action, data) {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+                credentials: 'include',
+                body: JSON.stringify({ action, ...data })
+            });
+
+            const newToken = response.headers.get('X-New-CSRF-Token');
+            if(newToken) CSRF_TOKEN = newToken;
+
+            const rawText = await response.text();
+            if (!rawText || rawText.includes('<html')) throw new Error('خطأ في الاتصال بالخادم.');
+
+            const result = JSON.parse(rawText);
+            if (!response.ok && response.status !== 429) throw new Error(result.message);
+            return result;
+        } catch (error) {
+            return { status: 'error', message: error.message || 'مشكلة في الاتصال.' };
+        }
+    }
+
+    function switchState(stateId) {
+        document.querySelectorAll('.state-view').forEach(el => el.classList.remove('active'));
+        document.getElementById(stateId).classList.add('active');
+        
+        if (stateId === 'state-register') {
+            const identVal = document.getElementById('global-identifier').value;
+            const phoneInput = document.getElementById('inp-reg-phone');
+            phoneInput.value = isPhoneIdentifier && identVal ? identVal : '';
+        }
+    }
+
+    function showToast(message, type = 'error') {
+        const toast = document.getElementById('toast');
+        const icon = document.getElementById('toast-icon');
+        document.getElementById('toast-msg').innerText = message;
+        
+        const color = type === 'error' ? 'var(--danger)' : (type === 'success' ? 'var(--success)' : 'var(--primary)');
+        const iconClass = type === 'error' ? 'fa-times-circle' : (type === 'success' ? 'fa-check-circle' : 'fa-info-circle');
+        
+        toast.style.borderBottom = `3px solid ${color}`;
+        icon.className = `fas ${iconClass}`;
+        icon.style.color = color;
+        
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    function toggleBtn(btn, isLoading) {
+        if(!btn) return;
+        btn.disabled = isLoading;
+        btn.querySelectorAll('.text').forEach(el => el.style.display = isLoading ? 'none' : 'block');
+        const spinner = btn.querySelector('.spinner');
+        if (spinner) spinner.style.display = isLoading ? 'block' : 'none';
+    }
+
+    function shakeInput(id) {
+        const el = document.getElementById(id);
+        if(el) {
+            el.classList.add('error');
+            setTimeout(() => el.classList.remove('error'), 400);
+        }
+    }
+
+    function openModal() { document.getElementById('terms-modal').classList.add('show'); }
+    function closeModal() { document.getElementById('terms-modal').classList.remove('show'); }
+
+    function setupOtpInputs() {
+        const boxes = document.querySelectorAll('.otp-box');
+        isSubmittingOtp = false;
+        
+        boxes.forEach(b => {
+            b.value = '';
+            b.disabled = false;
+            b.classList.remove('verifying', 'success', 'error', 'filled');
+        });
+        
+        boxes.forEach((box, i) => {
+            box.addEventListener('keydown', function(e) {
+                if(e.key === 'Backspace' && !box.value && i > 0) {
+                    boxes[i-1].focus();
+                    boxes[i-1].value = '';
+                    boxes[i-1].classList.remove('filled', 'error', 'success');
+                }
+            });
+            
+            box.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9٠-٩]/g, '').replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
+                this.classList.remove('error', 'success');
+                this.classList.toggle('filled', this.value !== '');
+                if (this.value && i < boxes.length - 1) boxes[i+1].focus();
+                if (getOtpCode().length === 6 && !isSubmittingOtp) {
+                    this.blur();
+                    handleOtpSubmit();
+                }
+            });
+            
+            box.addEventListener('paste', function(e) {
+                e.preventDefault();
+                let pasteData = (e.clipboardData || window.clipboardData).getData('text');
+                pasteData = pasteData.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[^0-9]/g, '').substring(0,6);
+                if(pasteData.length > 0) {
+                    boxes.forEach(b => { b.value = ''; b.classList.remove('filled', 'error', 'success'); });
+                    for(let j = 0; j < pasteData.length; j++) {
+                        if(boxes[j]) {
+                            boxes[j].value = pasteData[j];
+                            boxes[j].classList.add('filled');
+                        }
+                    }
+                    const nextIndex = Math.min(pasteData.length, boxes.length - 1);
+                    boxes[nextIndex].focus();
+                    if(pasteData.length === 6 && !isSubmittingOtp) handleOtpSubmit();
+                }
+            });
+        });
+    }
+    
+    function getOtpCode() {
+        return Array.from(document.querySelectorAll('.otp-box')).map(b => b.value).join('');
+    }
+
+    function startOtpTimer(duration) {
+        const display = document.getElementById('resend-timer');
+        const textContainer = document.getElementById('resend-text');
+        const resendBtn = document.getElementById('btn-resend-otp');
+        textContainer.style.display = 'block';
+        resendBtn.style.display = 'none';
+        let timer = duration;
+        clearInterval(otpTimerInterval);
+        
+        const updateDisplay = () => {
+            let m = parseInt(timer / 60, 10);
+            let s = parseInt(timer % 60, 10);
+            display.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+        };
+        updateDisplay();
+        
+        otpTimerInterval = setInterval(() => {
+            if (--timer < 0) {
+                clearInterval(otpTimerInterval);
+                textContainer.style.display = 'none';
+                resendBtn.style.display = 'block';
+            } else {
+                updateDisplay();
+            }
+        }, 1000);
+    }
+
+    async function resendOtp() {
+        const context = document.getElementById('global-context').value;
+        const btn = document.getElementById('btn-resend-otp');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+        btn.disabled = true;
+
+        let response;
+        if (context === 'register') {
+            response = await apiRequest('register_init', {
+                phone: document.getElementById('global-phone').value,
+                role: 'merchant',
+                name: document.getElementById('inp-reg-name').value.trim(),
+                username: document.getElementById('inp-reg-username').value.trim().toLowerCase(),
+                password: document.getElementById('inp-reg-password').value
+            });
+        } else if (context === 'recover') {
+            response = await apiRequest('recover_init', { phone: document.getElementById('global-phone').value });
+        } else if (context === 'login_otp') {
+            response = await apiRequest('resend_device_otp', {});
+        }
+
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+
+        if (response && ['success_otp_sent', 'success', 'new_device_otp_required'].includes(response.status)) {
+            showToast('تم الإرسال', 'success');
+            setupOtpInputs();
+            startOtpTimer(120);
+        } else {
+            showToast(response?.message || 'فشل الإرسال', 'error');
+        }
+    }
+
+    async function handleIdentifierSubmit(btn) {
+        const raw = document.getElementById('inp-identifier').value.trim();
+        if(!raw) { showToast('مطلوب', 'error'); shakeInput('inp-identifier'); return; }
+        
+        isPhoneIdentifier = !/[a-zA-Z]/.test(raw);
+        let clean = raw;
+        
+        if(isPhoneIdentifier) {
+            clean = raw.replace(/[^0-9]/g, '');
+            if(clean.startsWith('967')) clean = clean.substring(3);
+            if(clean.startsWith('0')) clean = clean.substring(1);
+            if(clean.length !== 9) { showToast('9 أرقام', 'error'); shakeInput('inp-identifier'); return; }
+        }
+
+        document.getElementById('global-identifier').value = clean;
+        
+        if (isPhoneIdentifier) {
+            toggleBtn(btn, true);
+            const response = await apiRequest('check_phone', { phone: clean });
+            toggleBtn(btn, false);
+
+            if(response.status === 'user_found') {
+                document.getElementById('display-user-name').innerText = response.name || '';
+                document.getElementById('identity-display').style.display = 'flex';
+                switchState('state-password');
+            } else if(response.status === 'user_not_found') {
+                switchState('state-register');
+            } else if(response.status === 'multiple_users_found') {
+                const container = document.getElementById('role-options-container');
+                container.innerHTML = '';
+                if(response.accounts.merchant) container.innerHTML += buildRoleBtn('merchant', response.accounts.merchant.name);
+                if(response.accounts.delivery) container.innerHTML += buildRoleBtn('delivery', response.accounts.delivery.name);
+                switchState('state-role-selection');
+            } else {
+                showToast(response.message, 'error');
+            }
+        } else {
+            document.getElementById('display-user-name').innerText = clean;
+            document.getElementById('identity-display').style.display = 'none'; 
+            switchState('state-password');
+        }
+    }
+
+    function buildRoleBtn(role, name) {
+        const icon = role === 'merchant' ? 'fa-store' : 'fa-motorcycle';
+        return `<div class="role-btn" onclick="selectRoleAndLogin('${role}')">
+                    <div class="r-icon"><i class="fas ${icon}"></i></div>
+                    <div><strong>${name}</strong><span>كـ ${role === 'merchant' ? 'تاجر' : 'مندوب'}</span></div>
+                    <i class="fas fa-chevron-left" style="color: var(--text-muted);"></i>
+                </div>`;
+    }
+    
+    function selectRoleAndLogin(role) {
+        document.getElementById('display-user-name').innerText = role === 'merchant' ? 'تاجر' : 'مندوب';
+        document.getElementById('identity-display').style.display = 'flex';
+        switchState('state-password');
+    }
+
+    async function handleLoginSubmit(btn) {
+        const identifier = document.getElementById('global-identifier').value;
+        const password = document.getElementById('inp-password').value;
+        const rememberMe = document.getElementById('inp-remember-me').checked; 
+        document.getElementById('global-remember').value = rememberMe ? 'true' : 'false';
+
+        if(!password) { showToast('أدخل كلمة المرور', 'error'); shakeInput('inp-password'); return; }
+        
+        toggleBtn(btn, true);
+        const response = await apiRequest('login', { phone: identifier, password: password, remember: rememberMe });
+        toggleBtn(btn, false);
+
+        if(response.status === 'success') {
+            btn.style.background = 'var(--success)';
+            if (response.token) localStorage.setItem('merchant_token', response.token);
+            setTimeout(() => { window.location.href = response.redirect.replace('.php', '.html'); }, 300);
+        } else if (response.status === 'new_device_otp_required') {
+            document.getElementById('global-context').value = 'login_otp';
+            document.getElementById('global-phone').value = identifier;
+            document.getElementById('global-state-token').value = response.state_token || '';
+            document.getElementById('otp-title').textContent = "تأكيد الجهاز";
+            document.getElementById('otp-subtitle').textContent = `تم الإرسال لـ: 967${identifier}+`;
+            setupOtpInputs();
+            startOtpTimer(300);
+            switchState('state-otp');
+        } else {
+            showToast(response.message || 'خطأ', 'error');
+            shakeInput('inp-password');
+            document.getElementById('inp-password').value = '';
+        }
+    }
+
+    async function handleOtpSubmit() {
+        const otpCode = getOtpCode();
+        if(otpCode.length !== 6 || isSubmittingOtp) return;
+        isSubmittingOtp = true;
+        const boxes = document.querySelectorAll('.otp-box');
+        boxes.forEach(b => { b.disabled = true; b.classList.add('verifying'); });
+        
+        const context = document.getElementById('global-context').value;
+        const phone = document.getElementById('global-phone').value;
+        const rememberMe = document.getElementById('global-remember').value === 'true';
+        const stateToken = document.getElementById('global-state-token').value;
+        
+        let action, data;
+        if(context === 'register') { action = 'register_verify'; data = { otp: otpCode, state_token: stateToken }; }
+        else if (context === 'recover') { action = 'recover_check_otp'; data = { phone: phone, otp: otpCode, state_token: stateToken }; }
+        else if (context === 'login_otp') { action = 'verify_new_device_otp'; data = { otp: otpCode, remember: rememberMe, state_token: stateToken }; }
+
+        const response = await apiRequest(action, data);
+        boxes.forEach(b => b.classList.remove('verifying'));
+
+        if(response.status === 'success') {
+            boxes.forEach(b => b.classList.add('success'));
+            clearInterval(otpTimerInterval);
+            if (response.state_token) document.getElementById('global-state-token').value = response.state_token;
+            
+            setTimeout(() => {
+                if (context === 'register') {
+                    showToast('تم التفعيل', 'success');
+                    switchState('state-identifier');
+                    document.getElementById('inp-identifier').value = phone;
+                } else if (context === 'recover') {
+                    switchState('state-new-password');
+                } else if (context === 'login_otp') {
+                     if (response.token) localStorage.setItem('merchant_token', response.token);
+                     window.location.href = response.redirect.replace('.php', '.html');
+                }
+                isSubmittingOtp = false;
+            }, 800);
+        } else {
+            boxes.forEach(b => { b.disabled = false; b.classList.add('error'); });
+            showToast(response.message || 'الرمز خاطئ', 'error');
+            setTimeout(() => {
+                boxes.forEach(b => { b.value = ''; b.classList.remove('error', 'filled'); });
+                boxes[0].focus();
+                isSubmittingOtp = false;
+            }, 500);
+        }
+    }
+
+    function selectCategory(el, val) {
+        document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('inp-reg-type').value = val;
+        
+        const otherInput = document.getElementById('inp-reg-type-other');
+        if(val === 'other') {
+            otherInput.style.display = 'block';
+            otherInput.focus();
+        } else {
+            otherInput.style.display = 'none';
+        }
+    }
+
+    function validateMapUrl(input) {
+        const url = input.value.trim();
+        const regex = /^(https?\:\/\/)?(www\.)?(google\.com\/maps|maps\.google\.com|goo\.gl\/maps|maps\.app\.goo\.gl)\/?.*$/i;
+        if (!url) { input.classList.remove('error'); return false; }
+        if (regex.test(url)) { input.classList.remove('error'); return true; }
+        input.classList.add('error'); return false;
+    }
+
+    function getLocationForRegistration(btn) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin text"></i>';
+        btn.disabled = true;
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    document.getElementById('inp-reg-location').value = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                    btn.innerHTML = orig; btn.disabled = false;
+                },
+                () => { showToast('فشل تحديد الموقع', 'error'); btn.innerHTML = orig; btn.disabled = false; },
+                { enableHighAccuracy: true }
+            );
+        } else {
+            showToast('غير مدعوم', 'error'); btn.innerHTML = orig; btn.disabled = false;
+        }
+    }
+
+    function previewUsername(input) {
+        const c = document.getElementById('username-preview');
+        const t = document.getElementById('username-text');
+        let val = input.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+        input.value = val;
+        if (val) { c.style.display = 'block'; t.textContent = window.location.host + '/' + val; }
+        else c.style.display = 'none';
+    }
+
+    async function handleRegisterSubmit(btn) {
+        let phone = document.getElementById('inp-reg-phone').value.replace(/[^0-9]/g, '');
+        if(phone.startsWith('967')) phone = phone.substring(3);
+        if(phone.startsWith('0')) phone = phone.substring(1);
+
+        const loc = document.getElementById('inp-reg-location').value.trim();
+        let storeType = document.getElementById('inp-reg-type').value;
+
+        if(storeType === 'other') {
+            storeType = document.getElementById('inp-reg-type-other').value.trim();
+        }
+
+        if(!storeType) { showToast('اختر نوع النشاط', 'error'); return; }
+        if(!validateMapUrl(document.getElementById('inp-reg-location'))) { showToast('رابط جوجل ماب غير صالح', 'error'); return; }
+        if(!document.getElementById('inp-terms').checked) { showToast('وافق على الشروط', 'error'); return; }
+
+        const data = {
+            phone: phone, role: 'merchant',
+            name: document.getElementById('inp-reg-name').value.trim(),
+            username: document.getElementById('inp-reg-username').value.trim(),
+            password: document.getElementById('inp-reg-password').value,
+            location: loc, store_type: storeType
+        };
+        
+        if(!data.phone || !data.name || !data.username || !data.password) { showToast('أكمل البيانات', 'error'); return; }
+        
+        document.getElementById('global-phone').value = phone; 
+        toggleBtn(btn, true);
+        const response = await apiRequest('register_init', data);
+        toggleBtn(btn, false);
+
+        if(response.status === 'success_otp_sent') {
+            document.getElementById('global-context').value = 'register';
+            document.getElementById('global-state-token').value = response.state_token || '';
+            setupOtpInputs();
+            startOtpTimer(120);
+            switchState('state-otp');
+        } else {
+            showToast(response.message || 'فشل التسجيل', 'error');
+        }
+    }
+
+    async function handleForgotPasswordInit() {
+        const id = document.getElementById('global-identifier').value;
+        if(!isPhoneIdentifier || !id) return;
+        document.getElementById('global-context').value = 'recover';
+        document.getElementById('global-phone').value = id;
+        const response = await apiRequest('recover_init', { phone: id });
+        if (response.status === 'success') {
+            document.getElementById('global-state-token').value = response.state_token || '';
+            setupOtpInputs();
+            startOtpTimer(120);
+            switchState('state-otp');
+        } else showToast(response.message, 'error');
+    }
+
+    async function handleSetNewPassword(btn) {
+        const p1 = document.getElementById('inp-new-password').value;
+        const p2 = document.getElementById('inp-confirm-password').value;
+        if (p1 !== p2) { showToast('غير متطابق', 'error'); return; }
+        toggleBtn(btn, true);
+        const response = await apiRequest('recover_set_password', { password: p1, state_token: document.getElementById('global-state-token').value });
+        toggleBtn(btn, false);
+        if (response.status === 'success') {
+            showToast('تم التحديث', 'success');
+            setTimeout(() => switchState('state-identifier'), 1000);
+        } else showToast(response.message, 'error');
+    }
+</script>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').catch(()=>{});
+        });
+    }
+    let deferredPrompt;
+    const pwaBanner = document.getElementById('pwa-banner');
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        setTimeout(() => pwaBanner.classList.add('show'), 2000);
+    });
+    document.getElementById('pwa-btn').addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        pwaBanner.classList.remove('show');
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+    });
+    document.getElementById('pwa-close').addEventListener('click', () => pwaBanner.classList.remove('show'));
+    window.addEventListener('appinstalled', () => pwaBanner.classList.remove('show'));    
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "id": "emerald",
+  "name": "زمردي طبيعي",
+  "description": "مظهر مريح للمنتجات الطبيعية.",
+  "category": "قوالب مخصصة",
+  "preview": {
+    "primary": "#059669",
+    "accent": "#10B981",
+    "background": "#F0FDF4"
+  },
+  "config": {
+    "light_theme": {
+      "colors": {
+        "primary": "#059669",
+        "primary_hover": "#047857",
+        "accent": "#10B981",
+        "bg_body": "#F0FDF4",
+        "bg_card": "#FFFFFF",
+        "text_main": "#064E3B",
+        "text_muted": "#047857",
+        "border": "#BBF7D0",
+        "navbar_bg": "#FFFFFF",
+        "bottom_bar_bg": "#FFFFFF",
+        "bottom_bar_active": "#059669",
+        "bottom_bar_inactive": "#6B7280",
+        "card_bg": "#FFFFFF",
+        "card_border": "#BBF7D0",
+        "price_color": "#059669",
+        "btn_primary_bg": "#059669",
+        "btn_primary_text": "#FFFFFF"
+      }
+    }
+  }
+}

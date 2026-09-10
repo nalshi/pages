@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>متجر نالش | Nalsh</title>
+    <meta name="description" content="منصة نالش للتسوق الإلكتروني السريع والموثوق.">
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="application-name" content="نالش">
+    <meta name="apple-mobile-web-app-title" content="نالش">
+    <base href="/">
+
+    <!-- خطوط وأيقونات -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- ملفات CSS والثيم الأصلي المتكامل -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/storefront-theme.css">
+
+    <!-- تفعيل الوضع الداكن فوراً قبل رندر أي عنصر -->
+    <script>
+        (function() {
+            var isStudio = window.location.search.indexOf('preview=studio') !== -1 || window.self !== window.top;
+            if (!isStudio && localStorage.getItem('darkMode') === 'enabled') {
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+</head>
+
+<body class="transitioning-body intro-locked">
+
+    <!-- حاوية أشرطة التنقل (يحقنها navigation.js) -->
+    <div id="navigation-wrapper"></div>
+
+    <!-- نظام التنبيهات -->
+    <div id="toast" class="toast" style="display:none; z-index:10005;"></div>
+
+    <!-- نافذة تأكيد الإجراءات العامة -->
+    <div id="confirmation-modal" style="position:fixed;inset:0;z-index:4000;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);">
+        <div class="confirmation-box" style="background:var(--bg-body);padding:30px;border-radius:var(--radius-xl);width:90%;max-width:400px;text-align:center;box-shadow:var(--shadow-lg);">
+            <h3 style="font-size:1.5rem;margin-bottom:15px;font-weight:900;">تأكيد</h3>
+            <p id="confirmation-message" style="color:var(--text-muted);font-size:1.1rem;margin-bottom:25px;">هل أنت متأكد؟</p>
+            <div style="display:flex;gap:15px;">
+                <button id="btn-confirm-action" class="btn-action primary" style="padding:15px;">نعم</button>
+                <button class="btn-action" style="background:var(--bg-card);color:var(--text-main);border:1px solid var(--border);padding:15px;" onclick="hideConfirmationModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي — Skeleton تحميل جذاب -->
+    <main id="main-content" class="transition-element">
+        <div class="fade-in-item" style="margin-top:0;padding-top:0;">
+            <!-- Skeleton كرت الهيرو -->
+            <div class="skeleton-line" style="border-radius:0 0 30px 30px;height:200px;width:100%;margin:0;"></div>
+            <div style="margin:-60px 15px 20px;background:var(--bg-card);padding:20px;border-radius:20px;position:relative;z-index:10;box-shadow:var(--shadow-sm);">
+                <div style="display:flex;gap:15px;align-items:center;margin-bottom:20px;">
+                    <div class="skeleton-line" style="width:70px;height:70px;border-radius:50%;margin:0;"></div>
+                    <div style="flex:1;">
+                        <div class="skeleton-line" style="height:24px;width:60%;margin-bottom:10px;"></div>
+                        <div class="skeleton-line" style="height:14px;width:80%;"></div>
+                    </div>
+                </div>
+                <div class="skeleton-line" style="height:48px;border-radius:24px;width:100%;margin-bottom:20px;"></div>
+                <div style="display:flex;gap:10px;">
+                    <div class="skeleton-line" style="height:38px;width:31%;border-radius:12px;margin:0;"></div>
+                    <div class="skeleton-line" style="height:38px;width:31%;border-radius:12px;margin:0;"></div>
+                    <div class="skeleton-line" style="height:38px;width:31%;border-radius:12px;margin:0;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skeleton شرائط الفئات -->
+        <div style="display:flex;gap:10px;overflow:hidden;padding:0 15px;margin-bottom:20px;">
+            <div class="skeleton-line" style="height:38px;min-width:90px;border-radius:20px;margin:0;"></div>
+            <div class="skeleton-line" style="height:38px;min-width:110px;border-radius:20px;margin:0;"></div>
+            <div class="skeleton-line" style="height:38px;min-width:80px;border-radius:20px;margin:0;"></div>
+        </div>
+
+        <!-- Skeleton كروت المنتجات -->
+        <div style="padding:0 15px;">
+            <div class="skeleton-line" style="height:22px;width:35%;margin-bottom:14px;border-radius:8px;"></div>
+            <div style="display:flex;gap:14px;overflow:hidden;">
+                <div class="skeleton-card" style="min-width:155px;height:238px;border-radius:16px;margin:0;flex-shrink:0;"></div>
+                <div class="skeleton-card" style="min-width:155px;height:238px;border-radius:16px;margin:0;flex-shrink:0;"></div>
+                <div class="skeleton-card" style="min-width:155px;height:238px;border-radius:16px;margin:0;flex-shrink:0;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- بانر تثبيت التطبيق كـ PWA -->
+    <div id="pwa-install-banner" style="display:none;">
+        <div class="pwa-text">ثبّت التطبيق لتجربة أسرع 🚀</div>
+        <button id="pwa-install-btn">تثبيت</button>
+        <button id="pwa-close-btn"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- ============================================================
+         ✅ ملفات JS الأصلية — تُشغّل كل الشكل والوظائف الأصلية 100%
+         ============================================================ -->
+    <script src="js/app.js" defer></script>
+    <script src="js/intro.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/search.js" defer></script>
+    <script src="js/cart.js" defer></script>
+    <script src="js/productDetails.js" defer></script>
+    <script src="js/navigation.js" defer></script>
+    <script src="js/orders.js" defer></script>
+    <script src="js/favorites.js" defer></script>
+    <script src="js/cardTemplates.js" defer></script>
+    <script src="js/productCards.js" defer></script>
+    <script src="js/checkout.js" defer></script>
+    <script src="js/home.js" defer></script>
+    <script src="js/store.js" defer></script>
+    <script src="js/storefront-engine.js" defer></script>
+    <script src="js/chatbot.js" defer></script>
+    <script src="js/shareModal.js" defer></script>
+
+    <!-- ============================================================
+         ⚡ TypeScript Bridge — جسر المزامنة مع الاستوديو والثيم
+         ============================================================ -->
+
+    <!-- تهيئة المكونات الأصلية بعد تحميل كل الملفات -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // تهيئة شرائط التنقل
+        if (typeof NavigationUI !== 'undefined' && typeof NavigationUI.init === 'function') {
+            NavigationUI.init();
+        }
+        // تهيئة نافذة تفاصيل المنتج
+        if (typeof ProductDetailUI !== 'undefined' && typeof ProductDetailUI.init === 'function') {
+            ProductDetailUI.init();
+        }
+        // منع النسخ لحماية الصور
+        if (typeof disableContentCopy === 'function') {
+            disableContentCopy();
+        }
+        // تهيئة حقول OTP
+        if (typeof setupOtpInputs === 'function') {
+            setupOtpInputs();
+        }
+        // تشغيل محرك المتجر الأساسي
+        if (typeof bootJAMstack === 'function') {
+            bootJAMstack();
+        }
+    });
+
+    // إعادة التحقق عند العودة للتبويب
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            if (typeof App !== 'undefined' && typeof App.startLiveSync === 'function') {
+                App.startLiveSync();
+            }
+        }
+    });
+
+    // دعم زر الرجوع في المتصفح
+    window.addEventListener('popstate', function() {
+        if (typeof goHome === 'function') goHome();
+    });
+    </script>
+</body>
+</html>

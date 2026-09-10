@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">    
+    <title>بوابة التاجر | نالش nalsh</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- الأنماط الأساسية والطباعة -->
+    <link rel="stylesheet" href="/css/cssd/dashboard-base.css">
+    <link rel="stylesheet" href="/css/cssd/dashboard-print.css" media="print">
+
+    <!-- الخطوط والأيقونات -->
+    <link rel="stylesheet" href="/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<script>try{if(localStorage.getItem('mThm')==='dark')document.body.classList.add('dark-mode');}catch(e){}</script>
+<script>
+    (function () {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        const lowPerformance = Boolean(
+            window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ) || Boolean(connection && connection.saveData)
+          || (navigator.deviceMemory && navigator.deviceMemory <= 2)
+          || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2);
+        if (lowPerformance) document.documentElement.classList.add('low-performance');
+    })();
+</script>
+
+<!-- تنبيه الطلب الجديد العائم -->
+<div id="new-order-alert" class="new-order-alert">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-bell shaking-bell-icon"></i>
+        <span>طلب جديد واصل الآن! 🛍️</span>
+    </div>
+    <button onclick="stopRingingAndGoToOrders()">عرض الطلب</button>
+</div>
+
+<!-- الشريط العلوي للطلبات المعلقة -->
+<div id="persistent-order-alert" class="persistent-alert-bar" onclick="goToPendingOrders()">
+    <div id="persistent-icon" class="persistent-alert-icon"><i class="fas fa-bell"></i></div>
+    <div class="persistent-text-wrapper">
+        <span id="persistent-title" class="persistent-title">جاري تحميل الحالة...</span>
+        <span id="pending-count-text" class="persistent-subtitle">0 طلب نشط</span>
+    </div>
+    <div class="persistent-action-btn">متابعة <i class="fas fa-arrow-left"></i></div>
+</div>
+
+<!-- شاشة تحميل الاتصال اللحظي -->
+<div id="initial-loading-screen">
+    <div class="ils-stage" id="ils-stage">
+        <div class="ils-logo-wrap" id="ils-logo-wrap">
+            <span class="ils-spinner" aria-hidden="true"></span>
+            <svg viewBox="0 0 100 100">
+                <path class="ils-logo-path" style="stroke-dashoffset: 0;" d="M50 8 L88 27 L88 73 L50 92 L12 73 L12 27 Z" />
+                <path class="ils-logo-path" style="stroke-dashoffset: 0;" d="M12 27 L50 46 L88 27" />
+                <path class="ils-logo-path" style="stroke-dashoffset: 0;" d="M50 46 L50 92" />
+                <circle class="ils-logo-fill" style="opacity: 1;" cx="50" cy="46" r="6"/>
+            </svg>
+        </div>
+        <h1 class="ils-brand-ar">نالش</h1>
+        <h2 class="ils-brand-en">nalsh</h2>
+        <div class="ils-divider"></div>
+        <p class="ils-tagline">تجهيز لوحة التحكم بأمان</p>
+        <div class="ils-connection-status"><span class="ils-status-dot"></span><span id="ils-status-text">التحقق من الاتصال اللحظي...</span></div>
+        <div class="ils-loader-bar"></div>
+    </div>
+
+    <script>
+    window.ilsUpdate = function(progress, message) {
+        const text = document.getElementById('ils-status-text');
+        if (text && message) text.textContent = message;
+    };
+    window.ilsConnectionState = function(state, message) {
+        const dot = document.querySelector('.ils-status-dot');
+        if (dot) dot.className = `ils-status-dot ${state || ''}`;
+        window.ilsUpdate(0, message);
+    };
+    window.appDataReady = false;
+    window.introAnimDone = false;
+
+    window.tryRevealApp = function() {
+        const ls = document.getElementById('initial-loading-screen');
+        const isRealtimeReady = typeof window.isDashboardRealtimeReady === 'function' 
+            ? window.isDashboardRealtimeReady() 
+            : Boolean(window.dashboardSocketReady && window.dashboardSnapshotLoaded);
+        const hasCache = Boolean(
+            localStorage.getItem('merchant_products_cache') || 
+            localStorage.getItem('merchant_settings_cache')
+        );
+        if (!ls || ls.dataset.hidden === '1' || !window.appDataReady || (!isRealtimeReady && !hasCache && !window.dashboardConnectionChecked)) return;
+        ls.dataset.hidden = '1';
+        ls.style.transition = 'opacity 0.12s ease';
+        ls.style.opacity = '0';
+        setTimeout(() => {
+            ls.style.display = 'none';
+            if (typeof switchT === 'function') switchT('dashboard');
+        }, 80);
+    };
+    </script>
+</div>
+
+<div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+<div id="toast" class="toast"><i class="fas fa-info-circle"></i> <span id="toast-msg"></span></div>
+
+<!-- الهيكل الرئيسي للمحرك (App Shell) -->
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="brand-box">
+            <div class="brand-nalsh-logo">
+                <div class="nalsh-decor-glow"></div>
+                <div class="nalsh-text-ar">نالش</div>
+                <div class="nalsh-text-en">nalsh</div>
+                <div class="nalsh-decor-line"><span></span></div>
+            </div>
+            <h2 class="store-name-display" id="ui-store-name">جاري التحميل...</h2>
+            <p id="ui-username"></p>
+        </div>
+        <nav class="nav-links">
+            <button class="nav-btn active" data-tab="dashboard"><i class="fas fa-chart-pie"></i> الرئيسية</button>
+            <button class="nav-btn" data-tab="management"><i class="fas fa-boxes"></i> المنتجات</button>
+            <button class="nav-btn" data-tab="orders"><i class="fas fa-shopping-basket"></i> الطلبات <span id="new-orders-badge" style="background:var(--danger); color:white; font-size:0.65rem; padding:2px 6px; border-radius:50px; margin-right:auto; display:none;">جديد</span></button>
+            <button class="nav-btn" data-tab="templates"><i class="fas fa-palette"></i> قوالب المتجر <span style="background:linear-gradient(135deg, #4F46E5, #06b6d4); color:white; font-size:0.65rem; padding:2px 6px; border-radius:50px; margin-right:auto;">جديد</span></button>
+            <button class="nav-btn" data-tab="settings"><i class="fas fa-cog"></i> الإعدادات</button>
+        </nav>
+        <button class="btn-main logout-btn" style="background: rgba(239, 68, 68, 0.08); color: var(--danger); box-shadow: none; margin-top: auto; border: 1px solid rgba(239, 68, 68, 0.18); padding: 10px;"><i class="fas fa-power-off"></i> تسجيل الخروج</button>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <h1 class="page-title" id="page-title">الرئيسية</h1>
+            <div class="topbar-actions">
+                <button class="action-icon" onclick="toggleTheme()" title="تغيير المظهر"><i class="fas fa-moon" id="theme-icon"></i></button>
+                <div style="position:relative;">
+                    <button id="notification-bell" class="action-icon" onclick="toggleNotificationPanel()" title="سجل النشاطات">
+                        <i class="fas fa-bell"></i>
+                        <span id="notif-badge" class="notif-badge"></span>
+                    </button>
+                    <div id="notification-panel">
+                        <div class="notif-header">
+                            <span>سجل النشاطات</span>
+                            <span class="clear" onclick="clearNotifications()">مسح الكل</span>
+                        </div>
+                        <div id="notif-list" class="notif-list-container"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- شريط مؤشر الانتقال السريع بين الأقسام -->
+        <div id="tab-progress-bar" class="tab-progress-bar"></div>
+
+        <!-- حاويات الأقسام (تُحقن تلقائياً عند الطلب) -->
+        <section id="dashboard" class="section active"></section>
+        <section id="management" class="section" style="display: none;"></section>
+        <section id="orders" class="section" style="display: none;"></section>
+        <section id="settings" class="section" style="display: none;"></section>
+        <section id="templates" class="section" style="display: none;"></section>
+    </main>
+    
+    <nav class="bottom-nav">
+        <div class="bottom-nav-inner">
+            <button class="b-nav-item active" data-tab="dashboard"><i class="fas fa-chart-pie"></i><span>الرئيسية</span></button>
+            <button class="b-nav-item" data-tab="management"><i class="fas fa-boxes"></i><span>المنتجات</span></button>
+            <button class="b-nav-item" data-tab="orders" style="position: relative;">
+                <i class="fas fa-shopping-basket"></i><span>الطلبات</span>
+                <span id="nav-badge-mobile" style="position:absolute; top:4px; right:18px; width:8px; height:8px; background:var(--danger); border-radius:50%; display:none; animation:pulse-badge 2s infinite;"></span>
+            </button>
+            <button class="b-nav-item" data-tab="templates"><i class="fas fa-palette"></i><span>القوالب</span></button>
+            <button class="b-nav-item" data-tab="settings"><i class="fas fa-cog"></i><span>إعدادات</span></button>
+        </div>
+    </nav>
+</div>
+
+<div id="print-area" style="display: none;"></div>
+
+<!-- محرك التطبيق الأساسي (Critical Engine) -->
+<script src="/js/dashboard/core.js"></script>
+<script src="/js/dashboard/ui.js"></script>
+<script src="/js/dashboard/notifications.js"></script>
+<script src="/js/dashboard/templates.js"></script>
+<script>
+    function bootApp() {
+        if (typeof initTheme === 'function') initTheme();
+        if (typeof setupNav === 'function') setupNav();
+        if (typeof updateNotificationUI === 'function') updateNotificationUI();
+        // ابدأ القناة قبل أي قراءة للكاش أو تحميل أقسام اللوحة.
+        if (!window.isLocalTemplateMode && typeof connectDashboardSocket === 'function') connectDashboardSocket();
+        document.querySelectorAll('.logout-btn').forEach(btn => {
+            btn.onclick = (e) => { e.preventDefault(); handleLogout(); };
+        });
+        if (typeof verifySessionAndLoad === 'function') verifySessionAndLoad();
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootApp);
+    } else {
+        bootApp();
+    }
+</script>
+</body>
+</html>
