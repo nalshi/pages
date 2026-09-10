@@ -128,56 +128,7 @@ if (fs.existsSync(functionsDir)) {
   console.log('  ✓ functions/ → dist/functions/');
 }
 
-// 6. إنشاء _headers و _redirects مباشرة في dist (للنشر على Cloudflare)
-const headersContent = `/*
-  X-Content-Type-Options: nosniff
-  Access-Control-Allow-Origin: *
 
-/index.html
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/auth-page.html
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/merchant-app.html
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/store-builder.html
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/login
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/dashboard
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/merchant-dashboard
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/builder
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/studio
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/js/*
-  Cache-Control: public, max-age=300, must-revalidate
-
-/css/*
-  Cache-Control: public, max-age=300, must-revalidate
-
-/templates/*
-  Cache-Control: public, max-age=300, must-revalidate
-
-/manifest.json
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/theme-config.json
-  Cache-Control: no-cache, no-store, must-revalidate
-`;
 fs.writeFileSync(path.resolve(distDir, '_headers'), headersContent, 'utf8');
 fs.chmodSync(path.resolve(distDir, '_headers'), SAFE_FILE_MODE);
 
