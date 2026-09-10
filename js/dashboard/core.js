@@ -589,6 +589,39 @@
     window.dashboardSharedWorker = null;
     window.dashboardSharedWorkerPort = null;
     window.dashboardSharedWorkerActive = false;
+    window.dashboardSharedWorkerInitialized = false; // منع إرسال init مكرر لنفس الجلسة
+
+    // ===== كاش سريع في sessionStorage لاستئناف الجلسة عند Refresh =====
+    window.saveDashboardSessionCache = function (snapshot) {
+        if (!snapshot || typeof snapshot !== 'object') return;
+        try {
+            sessionStorage.setItem('dashboard_session_snapshot', JSON.stringify({
+                data: snapshot,
+                ts: Date.now()
+            }));
+        } catch (e) { /* sessionStorage ممتلئ — تجاهل */ }
+    };
+
+    window.loadDashboardSessionCache = function () {
+        try {
+            const raw = sessionStorage.getItem('dashboard_session_snapshot');
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            if (!parsed || !parsed.data || !parsed.ts) return null;
+            // صلاحية الكاش: 10 دقائق
+            if (Date.now() - parsed.ts > 10 * 60 * 1000) {
+                sessionStorage.removeItem('dashboard_session_snapshot');
+                return null;
+            }
+            return { data: parsed.data, age: Date.now() - parsed.ts };
+        } catch (e) {
+            return null;
+        }
+    };
+
+    window.clearDashboardSessionCache = function () {
+        try { sessionStorage.removeItem('dashboard_session_snapshot'); } catch (e) {}
+    };
 
     window.isDashboardRealtimeReady = function () {
         return Boolean(
@@ -645,7 +678,38 @@
             if (typeof window.renderWeeklyActivityBar === 'function') window.renderWeeklyActivityBar(stats.weekly);
         }
 
+        // 💾 حفظ الـ snapshot في sessionStorage للاستئناف الفوري عند Refresh
+        if (typeof window.saveDashboardSessionCache === 'function') {
+            window.saveDashboardSessionCache(message);
+        }
+
         if (typeof window.tryRevealApp === 'function') window.tryRevealApp();
+    };
+
+    // ===== استئناف الجلسة (session_resume) — استخدام الكاش المحلي بدون طلب Worker =====
+    window.processDashboardSessionResume = function (resumeMsg) {
+        // الـ Durable Object يقول: البيانات حديثة — استخدم الـ sessionStorage مباشرة
+        const cached = typeof window.loadDashboardSessionCache === 'function'
+            ? window.loadDashboardSessionCache()
+            : null;
+
+        if (cached && cached.data) {
+            // بيانات حديثة موجودة محلياً → طبّقها بدون Worker request
+            window.processDashboardSnapshot(cached.data);
+            // تحديث الـ settings من الـ server إذا وُجدت في رسالة الاستئناف
+            if (resumeMsg && resumeMsg.settings && typeof window.applySettingsToUI === 'function') {
+                window.currentMerchantData = { ...window.currentMerchantData, ...resumeMsg.settings };
+                window.applySettingsToUI(window.currentMerchantData);
+            }
+            window.setDashboardSocketStatus('connected');
+            if (typeof window.ilsConnectionState === 'function') {
+                window.ilsConnectionState('success', 'استُؤنفت الجلسة فوراً');
+            }
+        } else {
+            // لا يوجد كاش محلي رغم session_resume → الـ Worker سيرسل snapshot كاملة لاحقاً
+            // لا نفعل شيئاً، فقط نحدّث الحالة
+            window.setDashboardSocketStatus('connecting', 'جاري تحميل البيانات...');
+        }
     };
 
     window.processDashboardEvent = function (message) {
@@ -717,79 +781,110 @@
             return Promise.resolve(true);
         }
 
+        // إذا كان هناك وعد قيد الانتظار (اتصال جارٍ الآن)، أعد نفس الوعد
+        if (window.dashboardDataReady && !window.dashboardSnapshotLoaded && window.dashboardSharedWorkerInitialized) {
+            return window.dashboardDataReady;
+        }
+
         const scheme = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const socketUrl = `${scheme}//${window.location.host}/api/worker/ws?merchant_id=${encodeURIComponent(merchantId)}&token=${encodeURIComponent(token)}`;
 
         // 🌟 1. المسار الفائق: SharedWorker للاستمرار عبر التحديثات والتبويبات
         if (typeof window.SharedWorker === 'function' && !window.dashboardSocketForceDirect) {
             try {
+                // إنشاء SharedWorker إذا لم يكن موجوداً (أول تحميل أو بعد crash)
                 if (!window.dashboardSharedWorker) {
                     window.dashboardSharedWorker = new SharedWorker('/js/dashboard/realtime-worker.js', { name: 'nalsh-merchant-realtime' });
                     const port = window.dashboardSharedWorker.port;
                     window.dashboardSharedWorkerPort = port;
+                    window.dashboardSharedWorkerInitialized = false;
 
-                    window.dashboardDataReady = new Promise((resolve) => {
-                        let settled = false;
-                        const finish = (val) => {
-                            if (!settled) {
-                                settled = true;
-                                clearTimeout(workerTimeout);
-                                resolve(val);
-                            }
-                        };
-                        const workerTimeout = setTimeout(() => {
-                            finish(window.isDashboardRealtimeReady());
-                        }, 12000);
+                    // تسجيل معالج الرسائل مرة واحدة فقط
+                    port.onmessage = function (event) {
+                        let msg = event.data;
+                        if (typeof msg === 'string') {
+                            try { msg = JSON.parse(msg); } catch (_) { return; }
+                        }
+                        if (!msg || typeof msg !== 'object') return;
 
-                        port.onmessage = function (event) {
-                            let msg = event.data;
-                            if (typeof msg === 'string') {
-                                try { msg = JSON.parse(msg); } catch (_) { return; }
-                            }
-                            if (!msg || typeof msg !== 'object') return;
-
-                            if (msg.type === 'status') {
-                                window.setDashboardSocketStatus(msg.status, msg.detail || '');
-                                if (msg.status === 'connected') {
-                                    window.dashboardSocketReady = true;
-                                    window.dashboardSharedWorkerActive = true;
-                                    if (window.dashboardSnapshotLoaded) finish(true);
-                                } else if (msg.status === 'disconnected') {
-                                    window.dashboardSocketReady = false;
-                                }
-                            } else if (msg.type === 'snapshot') {
+                        if (msg.type === 'status') {
+                            window.setDashboardSocketStatus(msg.status, msg.detail || '');
+                            if (msg.status === 'connected') {
+                                window.dashboardSocketReady = true;
                                 window.dashboardSharedWorkerActive = true;
-                                window.processDashboardSnapshot(msg.data);
-                                finish(true);
-                            } else if (msg.type === 'event') {
-                                window.processDashboardEvent(msg.data);
-                            } else if (msg.type === 'error') {
-                                window.setDashboardSocketStatus('disconnected', msg.message || 'خطأ في الاتصال اللحظي');
-                                finish(false);
+                                if (window.dashboardSnapshotLoaded && window._swResolve) {
+                                    window._swResolve(true);
+                                    window._swResolve = null;
+                                }
+                            } else if (msg.status === 'disconnected') {
+                                window.dashboardSocketReady = false;
+                                window.dashboardSharedWorkerActive = false;
                             }
-                        };
+                        } else if (msg.type === 'snapshot') {
+                            window.dashboardSharedWorkerActive = true;
+                            // إذا كانت snapshot حديثة من الـ SharedWorker ذاكرته (snapshotAge صغير)
+                            // نطبّقها مباشرة دون انتظار
+                            window.processDashboardSnapshot(msg.data);
+                            if (window._swResolve) {
+                                window._swResolve(true);
+                                window._swResolve = null;
+                            }
+                        } else if (msg.type === 'session_resume') {
+                            // استئناف جلسة فوري: استخدم sessionStorage بدون Worker request
+                            window.dashboardSharedWorkerActive = true;
+                            window.dashboardSocketReady = true;
+                            window.processDashboardSessionResume(msg.data);
+                            if (window._swResolve) {
+                                window._swResolve(true);
+                                window._swResolve = null;
+                            }
+                        } else if (msg.type === 'event') {
+                            window.processDashboardEvent(msg.data);
+                        } else if (msg.type === 'error') {
+                            window.setDashboardSocketStatus('disconnected', msg.message || 'خطأ في الاتصال اللحظي');
+                            if (window._swResolve) {
+                                window._swResolve(false);
+                                window._swResolve = null;
+                            }
+                        }
+                    };
+                    port.start();
+                }
 
-                        port.start();
-                        port.postMessage({
-                            action: 'init',
-                            socketUrl,
-                            merchantId,
-                            token
-                        });
-                    });
-                } else if (window.dashboardSharedWorkerPort) {
-                    window.dashboardSharedWorkerPort.postMessage({
-                        action: 'init',
-                        socketUrl,
-                        merchantId,
-                        token
+                // إنشاء وعد الانتظار إذا لم يكن محلوماً بعد
+                if (!window.dashboardSnapshotLoaded) {
+                    window.dashboardDataReady = new Promise((resolve) => {
+                        window._swResolve = resolve;
+                        const workerTimeout = setTimeout(() => {
+                            if (window._swResolve) {
+                                window._swResolve(window.isDashboardRealtimeReady());
+                                window._swResolve = null;
+                            }
+                        }, 12000);
+                        // إلغاء الـ timeout عند الحل
+                        const origResolve = window._swResolve;
+                        window._swResolve = (val) => {
+                            clearTimeout(workerTimeout);
+                            origResolve(val);
+                        };
                     });
                 }
-                return window.dashboardDataReady;
+
+                // إرسال init للـ SharedWorker (الـ Worker يُفرّق بين init جديد ومكرر)
+                window.dashboardSharedWorkerPort.postMessage({
+                    action: 'init',
+                    socketUrl,
+                    merchantId,
+                    token
+                });
+                window.dashboardSharedWorkerInitialized = true;
+
+                return window.dashboardDataReady || Promise.resolve(false);
             } catch (workerErr) {
                 console.warn('تراجع للاتصال المباشر:', workerErr);
                 window.dashboardSharedWorker = null;
                 window.dashboardSharedWorkerPort = null;
+                window.dashboardSharedWorkerInitialized = false;
             }
         }
 
@@ -897,7 +992,10 @@
     };
     window.addEventListener('online', () => {
         window.dashboardSocketReconnectAttempt = 0;
-        window.connectDashboardSocket();
+        // إعادة الاتصال فقط إذا كان منقطعاً فعلاً
+        if (!window.isDashboardRealtimeReady()) {
+            window.connectDashboardSocket();
+        }
     });
     window.addEventListener('offline', () => {
         window.setDashboardSocketStatus('offline');
@@ -911,7 +1009,8 @@
         }
 
         window.dashboardSocketPaused = false;
-        if (!window.dashboardSocketStop && navigator.onLine) {
+        // إعادة الاتصال فقط إذا كان الاتصال منقطعاً فعلاً (لا نُرسل init مكرر إذا كان متصلاً)
+        if (!window.dashboardSocketStop && navigator.onLine && !window.isDashboardRealtimeReady()) {
             window.connectDashboardSocket();
         }
     });

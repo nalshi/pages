@@ -6,6 +6,8 @@
  *  2. مشاركة اتصال WebSocket واحد بين جميع التبويبات المفتوحة لنفس التاجر.
  *  3. الاحتفاظ بآخر لقطة بيانات (Snapshot) في الذاكرة لتسليمها فوراً (0ms) لأي صفحة يُعاد تحميلها.
  *  4. إدارة إعادة الاتصال التلقائي بذكاء والحفاظ على صحة القناة مع Cloudflare Worker.
+ *  5. منع init مكرر لنفس التاجر — حماية من إرسال snapshot زائد.
+ *  6. إبلاغ الـ frontend بعمر بيانات الـ snapshot (snapshotAge) للتحقق من الحداثة.
  */
 
 /* eslint-disable no-restricted-globals */
@@ -15,10 +17,14 @@ let connectionConfig = null;
 let currentStatus = 'idle';
 let lastStatusDetail = '';
 let lastSnapshot = null;
+let lastSnapshotTimestamp = 0;
 let reconnectTimer = null;
 let reconnectAttempt = 0;
 let pingInterval = null;
 let isExplicitlyClosed = false;
+// منع إرسال init مكرر: آخر وقت تمت معالجة init لنفس التاجر
+let lastInitTimestamp = 0;
+const INIT_DEBOUNCE_MS = 3000; // 3 ثواني
 
 function broadcast(msg) {
     const data = typeof msg === 'string' ? msg : JSON.stringify(msg);
@@ -45,7 +51,7 @@ function startPing() {
                 ws.send(JSON.stringify({ type: 'ping' }));
             } catch (_) {}
         }
-    }, 20000);
+    }, 25000);
 }
 
 function stopPing() {
@@ -58,7 +64,8 @@ function stopPing() {
 function scheduleReconnect() {
     if (reconnectTimer || isExplicitlyClosed || ports.size === 0) return;
     reconnectAttempt++;
-    const delay = Math.min(15000, 1000 * Math.pow(1.6, Math.min(reconnectAttempt - 1, 5)));
+    // Exponential backoff: 1s → 1.8s → 3.2s → 5.8s → 10.5s → 19s → 30s (max)
+    const delay = Math.min(30000, 1000 * Math.pow(1.8, Math.min(reconnectAttempt - 1, 6)));
     reconnectTimer = setTimeout(() => {
         reconnectTimer = null;
         connectWebSocket();
@@ -113,8 +120,14 @@ function connectWebSocket() {
 
         if (msg.event === 'initial_load') {
             lastSnapshot = msg;
+            lastSnapshotTimestamp = Date.now();
             updateStatus('connected', 'متصل لحظياً');
-            broadcast({ type: 'snapshot', data: msg });
+            broadcast({ type: 'snapshot', data: msg, snapshotAge: 0 });
+        } else if (msg.event === 'session_resume') {
+            // الـ DO يقول: البيانات حديثة، استخدم الكاش المحلي
+            updateStatus('connected', 'متصل لحظياً (استئناف جلسة)');
+            // أرسل للـ frontend ليستخدم الـ sessionStorage مباشرة
+            broadcast({ type: 'session_resume', data: msg });
         } else if (msg.event === 'error') {
             updateStatus('disconnected', msg.message || 'خطأ في الاتصال اللحظي');
             broadcast({ type: 'error', message: msg.message });
@@ -140,6 +153,7 @@ function connectWebSocket() {
                 } else if (msg.event === 'settings_updated' && msg.settings) {
                     lastSnapshot.settings = msg.settings;
                 }
+                lastSnapshotTimestamp = Date.now();
             }
             // تمرير الحدث لجميع التبويبات فوراً
             broadcast({ type: 'event', event: msg.event, data: msg });
@@ -172,6 +186,7 @@ self.onconnect = function (e) {
 
         switch (msg.action) {
             case 'init': {
+                const now = Date.now();
                 const configChanged = !connectionConfig || 
                     connectionConfig.merchantId !== msg.merchantId || 
                     connectionConfig.token !== msg.token ||
@@ -185,12 +200,32 @@ self.onconnect = function (e) {
                     };
                     // إذا تغيّر التاجر، نصفر اللقطة ونعيد الاتصال
                     lastSnapshot = null;
+                    lastSnapshotTimestamp = 0;
+                    lastInitTimestamp = 0;
                     if (ws) {
                         try { ws.close(1000, 'تبديل التاجر'); } catch (_) {}
                         ws = null;
                     }
                     connectWebSocket();
+                } else if ((now - lastInitTimestamp) < INIT_DEBOUNCE_MS) {
+                    // نفس التاجر + init خلال أقل من 3 ثوانٍ → نتجاهل الطلب المكرر
+                    // فقط نرسل الحالة الحالية للـ port الجديد
+                    port.postMessage(JSON.stringify({
+                        type: 'status',
+                        status: currentStatus,
+                        detail: lastStatusDetail
+                    }));
+                    if (lastSnapshot) {
+                        port.postMessage(JSON.stringify({
+                            type: 'snapshot',
+                            data: lastSnapshot,
+                            snapshotAge: now - lastSnapshotTimestamp
+                        }));
+                    }
+                    break;
                 }
+
+                lastInitTimestamp = now;
 
                 // إرسال الحالة الحالية للتبويب فوراً (0ms latency!)
                 port.postMessage(JSON.stringify({
@@ -199,11 +234,12 @@ self.onconnect = function (e) {
                     detail: lastStatusDetail
                 }));
 
-                // إذا كان لدينا لقطة بيانات مسبقة، أرسلها لهذا التبويب فوراً
+                // إذا كان لدينا لقطة بيانات مسبقة، أرسلها لهذا التبويب فوراً مع عمرها
                 if (lastSnapshot) {
                     port.postMessage(JSON.stringify({
                         type: 'snapshot',
-                        data: lastSnapshot
+                        data: lastSnapshot,
+                        snapshotAge: now - lastSnapshotTimestamp
                     }));
                 }
 
@@ -215,6 +251,7 @@ self.onconnect = function (e) {
             }
 
             case 'reconnect': {
+                reconnectAttempt = 0;
                 if (ws) {
                     try { ws.close(); } catch (_) {}
                     ws = null;
@@ -228,8 +265,33 @@ self.onconnect = function (e) {
                 break;
             }
 
+            case 'get_status': {
+                // استعلام عن الحالة الحالية للاتصال
+                port.postMessage(JSON.stringify({
+                    type: 'status',
+                    status: currentStatus,
+                    detail: lastStatusDetail,
+                    hasSnapshot: Boolean(lastSnapshot),
+                    snapshotAge: lastSnapshotTimestamp ? Date.now() - lastSnapshotTimestamp : null
+                }));
+                break;
+            }
+
             case 'close_port': {
                 ports.delete(port);
+                // إذا لم يبقَ أي port متصل، أوقف محاولات الإعادة وأغلق الـ WS
+                if (ports.size === 0) {
+                    isExplicitlyClosed = true;
+                    stopPing();
+                    if (reconnectTimer) {
+                        clearTimeout(reconnectTimer);
+                        reconnectTimer = null;
+                    }
+                    if (ws) {
+                        try { ws.close(1000, 'لا يوجد تبويبات نشطة'); } catch (_) {}
+                        ws = null;
+                    }
+                }
                 break;
             }
 
