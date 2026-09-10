@@ -1,0 +1,361 @@
+/* ==========================================================================
+   Cart & Checkout Styles (cart.css) - نالش
+   يحتوي على: ستايلات السلة، كروت المتاجر داخل السلة، عناصر التحكم بالكمية، الدفع والتأكيد
+   ========================================================================== */
+
+/* ----------------------------------
+   1. حاويات المتاجر في السلة (نظام الأكورديون)
+------------------------------------- */
+.merchant-cart-group {
+    background: var(--bg-card) !important;
+    border-radius: var(--radius-xl) !important;
+    border: none !important; /* تم تطبيق تحسينات الأداء لإزالة الحدود */
+    margin-bottom: 15px;
+    overflow: hidden;
+    box-shadow: none !important; /* إزالة الظلال لتسريع الأداء */
+    transition: all 0.3s ease;
+}
+
+.merchant-cart-header {
+    background: rgba(79, 70, 229, 0.05);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: none !important;
+    font-weight: 900;
+    color: var(--primary);
+    cursor: pointer;
+    transition: all 0.3s;
+    user-select: none;
+}
+
+.merchant-cart-header:hover { 
+    background: rgba(79, 70, 229, 0.08); 
+}
+
+.merchant-cart-header-title { 
+    display: flex; align-items: center; gap: 10px; font-size: 1.1rem; 
+}
+
+.expand-icon { 
+    transition: transform 0.3s ease; color: var(--text-muted); 
+}
+
+/* الحالات الموسعة للسلة */
+.merchant-cart-group.expanded .merchant-cart-header { border-bottom-color: var(--border); }
+.merchant-cart-group.expanded .expand-icon { transform: rotate(180deg); color: var(--primary); }
+
+.merchant-cart-body { 
+    display: none; padding: 15px; animation: fadeIn 0.3s ease; 
+}
+.merchant-cart-group.expanded .merchant-cart-body { display: block; }
+
+.merchant-cart-footer { 
+    display: none; 
+    background: var(--bg-body); 
+    padding: 15px 20px; 
+    flex-direction: column; 
+    gap: 10px; 
+    border-top: none !important; 
+}
+.merchant-cart-group.expanded .merchant-cart-footer { 
+    display: flex; animation: fadeIn 0.3s ease; 
+}
+
+/* ----------------------------------
+   2. كروت المنتجات داخل السلة
+------------------------------------- */
+.cart-item-card { 
+    display: flex; 
+    gap: 12px; 
+    padding: 12px; 
+    background: var(--bg-card); 
+    border-radius: var(--radius-xl); 
+    border: none !important; 
+    margin-bottom: 15px; 
+    box-shadow: none !important; 
+}
+
+/* حالة الكرت داخل الأكورديون */
+.merchant-cart-body .cart-item-card {
+    border-bottom: 1px dashed var(--border);
+    border-radius: 0;
+    margin-bottom: 0;
+    padding: 15px 0;
+    background: transparent;
+}
+.merchant-cart-body .cart-item-card:last-child { border-bottom: none; padding-bottom: 0; }
+
+/* صورة المنتج في السلة (محسنة) */
+.cart-img-container { 
+    width: 80px; 
+    height: 80px; 
+    border-radius: 12px; 
+    background: var(--bg-body) !important; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    flex-shrink: 0; 
+    overflow: hidden;
+    position: relative;
+    border: none !important;
+}
+.cart-img-container img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: contain !important; 
+    padding: 4px;
+}
+
+.cart-info { flex: 1; display: flex; flex-direction: column; }
+
+/* ----------------------------------
+   3. أزرار التحكم بالكمية (Qty)
+------------------------------------- */
+.qty-controls { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    background: var(--bg-body); 
+    padding: 4px; 
+    border-radius: 12px; 
+    border: 1px solid var(--border); 
+    width: fit-content; 
+}
+
+.qty-btn { 
+    width: 30px; 
+    height: 30px; 
+    border-radius: 8px; 
+    background: var(--bg-card); 
+    border: none; 
+    font-weight: bold;
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+.qty-btn:active { transform: scale(0.9); }
+
+/* ----------------------------------
+   4. ملخص الحساب والشحن (Summary)
+------------------------------------- */
+.merchant-summary-row { 
+    display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 700; color: var(--text-muted); 
+}
+.merchant-summary-total { 
+    display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 900; color: var(--primary); padding-top: 10px; border-top: 1px dashed var(--border); margin-top: 5px; 
+}
+
+.shipping-badge { font-size: 0.8rem; padding: 5px 10px; border-radius: 8px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; }
+.shipping-free { background: var(--success); color: white; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);}
+.shipping-paid { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+
+/* ----------------------------------
+   5. شاشة تأكيد الطلب والدفع (Checkout)
+------------------------------------- */
+.checkout-merchant-card {
+    background: var(--bg-card) !important;
+    border: none !important;
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: none !important;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    color: var(--text-main) !important;
+}
+.checkout-merchant-card::before {
+    content: '';
+    position: absolute; right: 0; top: 0; bottom: 0; width: 5px;
+    background: var(--primary-gradient);
+}
+.checkout-merchant-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 15px; border-bottom: none !important; padding-bottom: 10px;
+}
+.checkout-merchant-header h4 {
+    font-size: 1.1rem; font-weight: 900; color: var(--primary); margin: 0;
+    display: flex; align-items: center; gap: 8px;
+}
+.checkout-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.95rem; margin-bottom: 12px; color: var(--text-main); font-weight: 700;
+}
+.checkout-row .text-muted { color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 8px;}
+.checkout-row.total {
+    font-size: 1.15rem; font-weight: 900; color: var(--text-main);
+    border-top: 1px solid var(--border); padding-top: 15px; margin-top: 5px;
+}
+
+.checkout-grand-total-box {
+    background: var(--bg-card) !important;
+    border: 2px solid rgba(16, 185, 129, 0.3);
+    border-radius: var(--radius-xl);
+    padding: 25px; text-align: center; margin-top: 25px;
+    box-shadow: none !important;
+    color: var(--text-main) !important;
+}
+.checkout-grand-total-box span { display: block; font-size: 1rem; color: var(--text-muted); font-weight: 800; margin-bottom: 8px; }
+.checkout-grand-total-box strong { font-size: 2.2rem; color: var(--success); font-weight: 900; text-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); }
+
+.delivery-distance-badge {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+#confirm-breakdown-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+#confirm-user-address {
+    background: var(--bg-body);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 15px;
+    margin-top: 10px;
+}
+/* ==========================================================================
+   النوافذ العصرية المنبثقة من الأسفل (السلة + المفضلة)
+   ========================================================================== */
+
+/* 1. الخلفيات الضبابية (Overlays) */
+.modern-cart-overlay, .modern-fav-overlay {
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0, 0, 0, 0.4); 
+    backdrop-filter: blur(4px); 
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 10000; 
+    opacity: 0; 
+    pointer-events: none; 
+    transition: opacity 0.3s ease;
+}
+.modern-cart-overlay.active, .modern-fav-overlay.active { 
+    opacity: 1; 
+    pointer-events: auto; 
+}
+
+/* 2. اللوحات السفلية (Panels) */
+.modern-cart-panel, .modern-fav-panel {
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    right: 0; 
+    background: var(--bg-body); 
+    z-index: 10001;
+    border-radius: 30px 30px 0 0; 
+    padding: 20px; 
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+    transform: translateY(100%); 
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    max-height: 85vh; 
+    display: flex; 
+    flex-direction: column;
+}
+.modern-cart-panel.active, .modern-fav-panel.active { 
+    transform: translateY(0); 
+}
+
+/* 3. عناصر الهيدر وأزرار الإغلاق */
+.cart-drag-handle, .fav-drag-handle { 
+    width: 50px; 
+    height: 5px; 
+    background: var(--border); 
+    border-radius: 10px; 
+    margin: 0 auto 15px; 
+}
+.cart-panel-header, .fav-panel-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 1px solid var(--border); 
+    padding-bottom: 15px; 
+    margin-bottom: 15px; 
+}
+.cart-panel-header h3, .fav-panel-header h3 { 
+    margin: 0; 
+    font-weight: 900; 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    font-size: 1.3rem; 
+}
+.cart-close-btn, .fav-close-btn { 
+    background: var(--bg-card); 
+    border: 1px solid var(--border); 
+    width: 35px; 
+    height: 35px; 
+    border-radius: 50%; 
+    color: var(--text-main); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+    transition: 0.2s; 
+}
+.cart-close-btn:active, .fav-close-btn:active { 
+    transform: scale(0.9); 
+}
+
+/* 4. تأثير التحميل المضيء (Skeleton Shimmer) */
+.cart-loading-shimmer, .fav-loading-shimmer {
+    width: 100%; 
+    height: 90px; 
+    background: linear-gradient(90deg, var(--bg-card) 25%, var(--border) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%; 
+    animation: panelShimmer 1.5s infinite; 
+    border-radius: 16px; 
+    margin-bottom: 15px;
+}
+@keyframes panelShimmer { 
+    0% { background-position: 200% 0; } 
+    100% { background-position: -200% 0; } 
+}
+
+/* 5. محتوى النوافذ الداخلي */
+.cart-panel-body, .fav-panel-body { 
+    flex: 1; 
+    overflow-y: auto; 
+    padding-bottom: 20px; 
+}
+.cart-panel-footer { 
+    padding-top: 15px; 
+    border-top: 1px solid var(--border); 
+}
+
+/* 6. كروت المفضلة المصغرة */
+.fav-item-card {
+    display: flex; 
+    background: var(--bg-card); 
+    padding: 12px; 
+    border-radius: 16px; 
+    border: 1px solid var(--border); 
+    box-shadow: var(--shadow-sm); 
+    cursor: pointer; 
+    transition: 0.2s;
+}
+.fav-item-card:active { 
+    transform: scale(0.98); 
+    background: var(--bg-body); 
+}
+.fav-trash-btn { 
+    color: var(--text-muted); 
+    padding: 5px 10px; 
+    cursor: pointer; 
+    transition: 0.2s; 
+}
+.fav-trash-btn:hover, .fav-trash-btn:active { 
+    color: var(--danger); 
+}

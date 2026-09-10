@@ -1,0 +1,454 @@
+/* ==========================================================================
+   Orders & Tracking Styles (orders.css) - نالش
+   يحتوي على: صفحة طلباتي، كروت الطلبات، تفاصيل المتاجر في الطلب، والخط الزمني (Timeline)
+   ========================================================================== */
+
+/* ----------------------------------
+   1. الهيدر والحاوية الرئيسية للطلب
+------------------------------------- */
+.order-group-wrapper { 
+    background: transparent; 
+    border: none; 
+    box-shadow: none; 
+    padding: 0; 
+    margin-bottom: 35px; 
+}
+
+.order-group-header { 
+    background: var(--primary-gradient); 
+    color: white; 
+    padding: 20px; 
+    border-radius: 20px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 15px; 
+    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3); 
+}
+
+.order-group-header h3 { 
+    margin: 0; 
+    font-weight: 900; 
+    font-size: 1.3rem; 
+    letter-spacing: 1px; 
+}
+
+.order-group-header .date { 
+    font-size: 0.9rem; 
+    opacity: 0.9; 
+    font-weight: 600; 
+    display: block; 
+    margin-top: 5px; 
+}
+
+.order-group-header .total { 
+    font-size: 1.6rem; 
+    font-weight: 900; 
+    background: rgba(0,0,0,0.2); 
+    padding: 5px 15px; 
+    border-radius: 12px; 
+}
+
+/* ----------------------------------
+   2. كرت المتجر داخل الطلب
+------------------------------------- */
+.order-merchant-card { 
+    background: var(--bg-card); 
+    border: 1px solid var(--border); 
+    border-radius: 20px; 
+    padding: 20px; 
+    margin-bottom: 15px; 
+    box-shadow: var(--shadow-sm); 
+    position: relative; 
+    overflow: hidden; 
+}
+
+.order-merchant-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 2px dashed var(--border); 
+    padding-bottom: 15px; 
+    margin-bottom: 15px; 
+}
+
+.order-merchant-header h4 { 
+    font-size: 1.2rem; 
+    font-weight: 900; 
+    color: var(--primary); 
+    margin: 0; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+
+/* ----------------------------------
+   3. عناصر المنتجات داخل الطلب
+------------------------------------- */
+.order-item-modern { 
+    display: flex; 
+    gap: 15px; 
+    align-items: center; 
+    padding: 10px; 
+    background: var(--bg-body); 
+    border-radius: 16px; 
+    margin-bottom: 10px; 
+    border: 1px solid var(--border); 
+}
+
+/* تحسين صور الطلبات (عرض الصورة كاملة دون تقريب/قص) */
+.order-item-modern .item-img { 
+    width: 65px; 
+    height: 65px; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    flex-shrink: 0; 
+    border: 1px solid var(--border);
+    background-color: var(--bg-card);
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+.order-item-modern .item-img img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: contain !important; /* يمنع قص الصورة */
+    padding: 2px; /* مساحة صغيرة حول الصورة لتبدو أرتب */
+}
+
+.order-item-modern .item-details { flex: 1; }
+
+.order-item-modern .item-details h5 { 
+    font-size: 1.05rem; 
+    font-weight: 900; 
+    margin: 0 0 5px 0; 
+    color: var(--text-main); 
+    line-height: 1.3; 
+}
+
+.order-item-modern .item-variant { 
+    font-size: 0.8rem; 
+    background: rgba(79,70,229,0.1); 
+    color: var(--primary); 
+    padding: 3px 8px; 
+    border-radius: 6px; 
+    font-weight: 700; 
+    display: inline-block; 
+}
+
+.order-item-modern .item-price-qty { text-align: left; }
+
+.order-item-modern .qty { 
+    font-size: 0.9rem; 
+    color: var(--text-muted); 
+    font-weight: 800; 
+    margin-bottom: 3px; 
+}
+
+.order-item-modern .price { 
+    font-size: 1.1rem; 
+    font-weight: 900; 
+    color: var(--text-main); 
+}
+
+/* ----------------------------------
+   4. الإحصائيات المالية للطلب (الفاتورة)
+------------------------------------- */
+.order-financials { 
+    background: rgba(16, 185, 129, 0.05); 
+    border: 1px solid rgba(16, 185, 129, 0.2); 
+    padding: 15px; 
+    border-radius: 16px; 
+    margin-top: 15px; 
+}
+
+.fin-row { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 0.95rem; 
+    color: var(--text-muted); 
+    margin-bottom: 8px; 
+    font-weight: 700; 
+}
+
+.fin-row.total { 
+    font-size: 1.2rem; 
+    color: var(--success); 
+    font-weight: 900; 
+    border-top: 1px dashed rgba(16, 185, 129, 0.3); 
+    padding-top: 10px; 
+    margin-top: 5px; 
+    margin-bottom: 0; 
+}
+
+/* ----------------------------------
+   5. الخط الزمني لتتبع الطلب (Timeline)
+------------------------------------- */
+.order-timeline { 
+    display: flex; 
+    justify-content: space-between; 
+    position: relative; 
+    margin: 30px 0 15px; 
+}
+
+.order-timeline::before { 
+    content: ''; 
+    position: absolute; 
+    top: 15px; 
+    left: 0; 
+    right: 0; 
+    height: 4px; 
+    background: var(--border); 
+    border-radius: 4px; 
+    z-index: 1; 
+}
+
+.timeline-progress { 
+    position: absolute; 
+    top: 15px; 
+    right: 0; 
+    height: 4px; 
+    background: var(--primary); 
+    border-radius: 4px; 
+    z-index: 2; 
+    transition: width 0.5s; 
+}
+
+.timeline-step { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    flex: 1; 
+    position: relative; 
+    z-index: 3; 
+}
+
+.timeline-icon { 
+    width: 34px; 
+    height: 34px; 
+    border-radius: 50%; 
+    background: var(--bg-body); 
+    border: 4px solid var(--border); 
+    color: var(--text-muted); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    font-size: 0.9rem; 
+    transition: 0.3s; 
+}
+
+.timeline-step.active .timeline-icon { 
+    background: var(--primary); 
+    border-color: var(--primary-glow); 
+    color: white; 
+    box-shadow: 0 0 10px var(--primary-glow); 
+}
+
+.timeline-label { 
+    font-size: 0.75rem; 
+    margin-top: 8px; 
+    font-weight: 800; 
+    color: var(--text-muted); 
+    text-align: center; 
+}
+
+.timeline-step.active .timeline-label { color: var(--text-main); }
+
+/* ----------------------------------
+   6. كرت التتبع الجديد (Tracking Card)
+------------------------------------- */
+.track-card-new { 
+    background: var(--bg-card); 
+    border: 1px solid var(--border); 
+    border-radius: var(--radius-xl); 
+    padding: 25px; 
+    margin-bottom: 20px; 
+    box-shadow: var(--shadow-sm); 
+}
+
+.track-card-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start; 
+    padding-bottom: 20px; 
+    border-bottom: 2px dashed var(--border); 
+    margin-bottom: 20px; 
+}
+
+.track-card-header .info strong { 
+    font-size: 1.3rem; 
+    display: block; 
+    color: var(--primary); 
+    font-weight: 900; 
+}
+
+/* ----------------------------------
+   7. دعم التمرير السلس للتبويبات
+------------------------------------- */
+#user-orders-tabs {
+    -webkit-overflow-scrolling: touch !important;
+    transform: translateZ(0); 
+}
+
+/* ----------------------------------
+   8. التجاوب مع شاشات الهواتف الصغيرة
+------------------------------------- */
+@media (max-width: 480px) {
+    .order-group-header { flex-direction: column; text-align: center; gap: 10px; }
+    .order-timeline { margin: 20px 0 10px; }
+    .timeline-icon { width: 28px; height: 28px; font-size: 0.75rem; border-width: 3px; }
+    .timeline-label { font-size: 0.65rem; }
+}
+/* ==========================================================================
+   Modern Orders & Profile Styles - Ultra Optimized 🚀
+   ========================================================================== */
+
+/* 1. متغيرات الألوان والتصميم (تأكد من وجودها في ملفك الرئيسي) */
+:root {
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --primary: #4f46e5;
+    --primary-soft: rgba(79, 70, 229, 0.1);
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --border: #e2e8f0;
+    --radius-xl: 24px;
+    --radius-lg: 16px;
+    --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08);
+}
+
+/* 2. تحسين الأداء الاستثنائي للقوائم الطويلة */
+.order-group-wrapper {
+    /* هذه الخاصية السحرية تجعل المتصفح لا يعالج العناصر خارج الشاشة = أداء صاروخي */
+    content-visibility: auto; 
+    contain-intrinsic-size: 0 400px; /* الارتفاع التقريبي للكرت */
+    
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    will-change: transform; /* تسريع الهاردوير للأجهزة الضعيفة */
+}
+
+.order-group-wrapper:active {
+    transform: scale(0.98);
+}
+
+/* 3. الهيدر الشخصي (Profile Header) - تصميم عائم */
+.profile-page-user-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(135deg, var(--primary), #818cf8);
+    padding: 30px 20px;
+    border-radius: var(--radius-xl);
+    color: white;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 30px rgba(79, 70, 229, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-page-user-header::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    filter: blur(40px);
+}
+
+.user-initial-large {
+    width: 70px; height: 70px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px); /* تأثير الزجاج */
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 900;
+}
+
+/* 4. تبويبات التنقل (Tabs) - تصميم مرن كالكبسولات */
+#user-orders-tabs {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: none; /* إخفاء شريط التمرير */
+    -webkit-overflow-scrolling: touch;
+}
+#user-orders-tabs::-webkit-scrollbar { display: none; }
+
+.sub-nav-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sub-nav-item.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 8px 20px var(--primary-soft);
+}
+
+/* 5. هياكل التحميل الوهمية (Skeleton Loaders) - لتقليل القلق لدى المستخدم */
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+.skeleton-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+}
+
+.skeleton-line {
+    height: 16px;
+    background: linear-gradient(90deg, var(--border) 25%, #f1f5f9 50%, var(--border) 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite linear;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+/* 6. تحسين الخط الزمني (Timeline) ليكون أنظف على الموبايل */
+.order-timeline {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin: 25px 0 10px;
+    padding: 0 10px;
+}
+
+.timeline-step .timeline-icon {
+    width: 30px; height: 30px;
+    font-size: 0.8rem;
+    background: var(--bg-main);
+    z-index: 2;
+}
+
+.timeline-step.active .timeline-icon {
+    background: var(--primary);
+    transform: scale(1.1);
+}

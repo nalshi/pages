@@ -1,0 +1,522 @@
+/* ==========================================================================
+   Product Details Styles (productDetails.css)
+   تصميم عصري، متجاوب بالكامل مع جميع أحجام الشاشات، ومُحسّن للأجهزة الضعيفة
+   ========================================================================== */
+
+#product-detail-page .page-body {
+    padding: 0;
+    padding-bottom: 90px; /* مساحة لزر الشراء السفلي */
+}
+
+/* ---------------------------------------------------------
+   حاوية الصورة الرئيسية
+--------------------------------------------------------- */
+.pd-image-container {
+    width: 100%;
+    height: 46vh;
+    max-height: 460px;
+    min-height: 320px;
+    background-color: var(--border);
+    position: relative;
+}
+
+.pd-image-container .image-container-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    contain: layout paint size; /* تحسين أداء الرسم على الأجهزة الضعيفة */
+}
+
+.pd-image-container .image-container-wrapper img {
+    object-fit: contain !important;
+    background-color: var(--bg-card);
+}
+
+.pd-image-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 30%;
+    background: linear-gradient(to top, var(--bg-body), transparent);
+    z-index: 3;
+    pointer-events: none;
+}
+
+/* ---------------------------------------------------------
+   محتوى المنتج
+--------------------------------------------------------- */
+.pd-content {
+    padding: 28px 22px 10px;
+    background: var(--bg-body);
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    margin-top: -28px;
+    position: relative;
+    z-index: 4;
+    box-shadow: 0 -10px 20px rgba(0,0,0,0.05);
+}
+
+#pd-name {
+    font-size: 1.35rem;
+    font-weight: 900;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    color: var(--text-main);
+    letter-spacing: -0.2px;
+}
+
+#pd-desc {
+    color: var(--text-muted);
+    font-size: 1.02rem;
+    line-height: 1.85;
+    margin: 18px 0 8px;
+}
+
+/* شريحة التاجر */
+.pd-merchant-chip {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 12px 15px;
+    border-radius: 16px;
+    margin: 15px 0 20px 0;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.pd-merchant-chip:hover {
+    background: rgba(0, 0, 0, 0.02);
+    transform: translateY(-2px);
+}
+.dark-mode .pd-merchant-chip:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.pd-merchant-chip .chip-top {
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pd-merchant-chip .chip-icon {
+    color: var(--primary);
+    font-size: 0.85rem;
+}
+
+.pd-merchant-chip .chip-name {
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--text-main);
+}
+
+.pd-merchant-chip .chip-bottom {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+    width: 100%;
+}
+
+.pd-merchant-chip .chip-username {
+    background: rgba(168, 85, 247, 0.15);
+    color: #a855f7;
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 6px;
+    direction: ltr;
+    display: inline-block;
+}
+
+/* ---------------------------------------------------------
+   قسم المنتجات ذات الصلة (من نفس شجرة الفئات)
+--------------------------------------------------------- */
+.related-products-section {
+    padding: 8px 0 10px;
+    background: var(--bg-body);
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 320px;
+}
+
+.related-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px 16px;
+}
+
+.related-products-section h3 {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.related-products-section h3 i {
+    color: var(--primary);
+    font-size: 1.05rem;
+}
+
+/* ---------------------------------------------------------
+   الهيدر الشفاف
+--------------------------------------------------------- */
+.dark-mode #product-detail-page .page-header button {
+    background: rgba(30, 41, 59, 0.85) !important;
+    border-color: rgba(255,255,255,0.1) !important;
+}
+
+#product-detail-page .page-header {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    z-index: 100 !important;
+}
+
+#product-detail-page .page-body {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* ----------------------------------
+   تأثير التحميل الهيكلي (Shimmer Effects)
+------------------------------------- */
+.pd-skeleton-shimmer {
+    background: linear-gradient(90deg, var(--border) 25%, rgba(255,255,255,0.15) 37%, var(--border) 63%);
+    background-size: 400% 100%;
+    animation: pd-shimmer-anim 1.4s ease infinite;
+}
+.dark-mode .pd-skeleton-shimmer {
+    background: linear-gradient(90deg, var(--bg-card) 25%, rgba(255,255,255,0.04) 37%, var(--bg-card) 63%);
+    background-size: 400% 100%;
+}
+@keyframes pd-shimmer-anim {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pd-skeleton-shimmer { animation: none; opacity: 0.6; }
+    .pd-merchant-chip, .options-bottom-sheet, .sheet-overlay, #main-buy-btn { transition: none !important; }
+}
+
+/* ----------------------------------
+   النافذة المنبثقة للخيارات (Bottom Sheet)
+------------------------------------- */
+.sheet-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1390 !important;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.options-bottom-sheet {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--bg-body);
+    z-index: 1400 !important;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+}
+.sheet-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.options-bottom-sheet.active {
+    transform: translateY(0);
+}
+
+.sheet-header {
+    padding: 20px 25px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+.sheet-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--text-main);
+}
+.sheet-close-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    width: 35px; height: 35px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+.sheet-content {
+    padding: 20px 25px;
+    overflow-y: auto;
+}
+
+.sheet-product-preview {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    align-items: center;
+}
+.sheet-product-preview img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: opacity 0.2s ease;
+}
+.sheet-product-info {
+    display: flex;
+    flex-direction: column;
+}
+.sheet-price {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--primary);
+}
+
+#sheet-options-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.option-chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 46px;
+    padding: 0 18px;
+    margin: 0;
+    border: 2px solid var(--border);
+    border-radius: 13px;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background: var(--bg-card);
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+.option-chip:active {
+    transform: scale(0.94);
+}
+.option-chip.selected {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(79,70,229,0.3);
+}
+@media (hover: hover) {
+    .option-chip:hover {
+        border-color: var(--primary);
+    }
+}
+
+.sheet-footer {
+    padding: 15px 25px 25px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-body);
+    padding-bottom: 90px !important;
+}
+
+/* =========================================================================
+   التوافق مع الأجهزة اللوحية والشاشات الكبيرة (تابلت وديسكتوب)
+   ========================================================================= */
+@media (min-width: 768px) {
+    /* إلغاء الانزلاق من الأسفل واستخدام Fade كأوفرلاي مودال */
+    #product-detail-page {
+        transform: none !important;          /* إلغاء translate3d الأفقية */
+        transition: opacity 0.3s ease, visibility 0.3s ease !important;
+        opacity: 0;
+        visibility: hidden;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        background: rgba(10, 14, 30, 0.78);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        padding: 30px 20px;
+        overflow-y: auto;
+    }
+
+    #product-detail-page.open {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto;
+    }
+
+    #product-detail-page .page-header {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        right: 16px;
+        max-width: none;
+        margin: 0;
+        z-index: 300;
+        width: calc(100% - 32px);
+    }
+
+    #product-detail-page .page-body {
+        display: grid !important;
+        grid-template-columns: minmax(300px, 420px) 1fr;
+        grid-template-areas:
+            "img content"
+            "related related";
+        column-gap: 36px;
+        row-gap: 24px;
+        max-width: 1040px;
+        width: 100%;
+        max-height: 85vh;
+        overflow-y: auto;
+        margin: auto;
+        padding: 48px 32px 32px;
+        background: var(--bg-card, #ffffff);
+        border-radius: 26px;
+        border: 1px solid var(--border, rgba(0,0,0,0.08));
+        box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.45);
+        position: relative;
+        align-items: start;
+        scrollbar-width: thin;
+    }
+
+    .dark-mode #product-detail-page .page-body {
+        background: var(--bg-card, #151E2E);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.7);
+    }
+
+    .pd-image-container {
+        grid-area: img;
+        height: 430px;
+        max-height: none;
+        min-height: 320px;
+        border-radius: 18px;
+        overflow: hidden;
+        position: sticky;
+        top: 0;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border);
+        background: var(--bg-surface);
+    }
+
+    .pd-image-container::after { display: none; }
+
+    .pd-content {
+        grid-area: content;
+        margin-top: 0;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        background: transparent;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #pd-name { font-size: 1.6rem; margin-top: 0; margin-bottom: 12px; }
+    #pd-desc { font-size: 1rem; line-height: 1.8; margin: 14px 0; }
+
+    .pd-merchant-chip {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        box-shadow: none;
+        padding: 10px 14px;
+        border-radius: 14px;
+        margin: 10px 0 16px;
+    }
+
+    .related-products-section {
+        grid-area: related;
+        padding-top: 18px;
+        border-top: 1px solid var(--border);
+    }
+    .related-section-head { padding: 0 0 14px; }
+
+    /* زر إضافة إلى السلة في وضع الكمبيوتر — داخل الكرت */
+    #product-detail-page .page-footer {
+        position: static !important;
+        width: 100% !important;
+        margin-top: 16px !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    #product-detail-page .page-footer #main-buy-btn {
+        width: 100% !important;
+        height: 52px !important;
+        border-radius: 14px !important;
+        font-size: 1.1rem !important;
+        font-weight: 900 !important;
+    }
+}
+
+/* تنسيق زر المنتج النافد */
+.out-of-stock-disabled,
+#main-buy-btn.out-of-stock-disabled,
+#confirm-add-btn:disabled {
+    background: #64748B !important;
+    color: #F1F5F9 !important;
+    cursor: not-allowed !important;
+    opacity: 0.75 !important;
+    box-shadow: none !important;
+    border: none !important;
+    transform: none !important;
+}
+.atc-btn.atc-disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    filter: grayscale(1) !important;
+}
+
+@media (min-width: 768px) {
+    .options-bottom-sheet {
+        top: 50%;
+        left: 50%;
+        bottom: auto;
+        right: auto;
+        width: 460px;
+        border-radius: 24px;
+        transform: translate(-50%, -50%) scale(0.9);
+        opacity: 0;
+        visibility: hidden;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1), opacity 0.25s ease, visibility 0.25s ease;
+    }
+    .options-bottom-sheet.active {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+@media (max-width: 360px) {
+    .pd-content { padding: 22px 16px 10px; }
+    #pd-name { font-size: 1.2rem; }
+}

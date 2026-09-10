@@ -1,0 +1,650 @@
+/* ==========================================================================
+   Storefront Styles (store.css) - نالش
+   يحتوي على: واجهات التاجر المستقل، كروت المتاجر، شبكات منتجات المتجر، والبحث المحلي
+   ========================================================================== */
+
+/* ================= المتغيرات الخاصة بالمتجر ================= */
+:root {
+    --store-radius: 20px;
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+.dark-mode {
+    --glass-bg: rgba(15, 23, 42, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.05);
+}
+
+/* ================= إعدادات الشاشة للمتجر المستقل (Isolated Mode) ================= */
+body.isolated-mode {
+    padding-top: 75px !important;
+    padding-bottom: var(--bottom-nav-height) !important;
+    background-color: var(--bg-body);
+}
+
+/* ================= كرت المتجر العام في الرئيسية ================= */
+.store-card { display: flex; align-items: center; gap: 15px; padding: 20px; background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border); cursor: pointer; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--shadow-sm); margin-bottom: 15px; position: relative; overflow: hidden; }
+.store-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--primary-gradient); opacity: 0; transition: 0.3s; }
+.store-card:hover { transform: translateX(-5px) translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+.store-card:hover::before { opacity: 1; }
+.store-avatar { width: 65px; height: 65px; border-radius: 18px; background: var(--primary-gradient); color: white; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: 900; flex-shrink: 0; box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3); }
+.store-info { flex: 1; }
+.store-info h3 { font-size: 1.3rem; font-weight: 900; margin-bottom: 5px; color: var(--text-main); }
+.store-info p { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+.store-action-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-body); display: flex; justify-content: center; align-items: center; color: var(--primary); transition: 0.3s; }
+.store-card:hover .store-action-icon { background: var(--primary); color: white; transform: scale(1.1); }
+
+/* ================= كروت اسم المتجر واليوزرنيم (Chips) ================= */
+.merchant-modern-chip { display: flex; flex-direction: column; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s ease, opacity 0.2s ease; padding: 4px; border-radius: 8px; }
+.merchant-modern-chip:hover { background: rgba(0, 0, 0, 0.02); transform: translateY(-2px); }
+.dark-mode .merchant-modern-chip:hover { background: rgba(255, 255, 255, 0.02); }
+.merchant-modern-chip .chip-top { display: flex; align-items: center; gap: 6px; }
+.merchant-modern-chip .chip-icon { color: var(--primary); font-size: 0.85rem; }
+.merchant-modern-chip .chip-name { font-size: 0.85rem; font-weight: 900; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.merchant-modern-chip .chip-bottom { display: flex; justify-content: flex-end; margin-top: 4px; width: 100%; }
+.merchant-modern-chip .chip-username { background: rgba(168, 85, 247, 0.15); color: #a855f7; font-size: 0.7rem; font-weight: 800; padding: 2px 8px; border-radius: 6px; direction: ltr; display: inline-block; }
+
+.pd-merchant-chip { background: var(--bg-card); border: 1px solid var(--border); padding: 12px 15px; border-radius: 16px; margin: 15px 0 20px 0; box-shadow: var(--shadow-sm); }
+.pd-merchant-chip .chip-top { font-size: 1.1rem; }
+.pd-merchant-chip .chip-name { font-size: 1rem; }
+.pd-merchant-chip .chip-username { font-size: 0.8rem; padding: 4px 12px; }
+
+/* ================= قسم المتاجر في الرئيسية ================= */
+.merchant-feed-section { padding: 15px 0; border-bottom: 8px solid var(--border); }
+.merchant-feed-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; margin-bottom: 15px; }
+@media (min-width: 768px) { .merchant-feed-header { padding: 0 40px; } }
+.merchant-feed-header .m-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.merchant-feed-header .m-avatar { width: 45px; height: 45px; border-radius: 14px; background: var(--primary-gradient); color: white; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 1.2rem; box-shadow: var(--shadow-sm); }
+.merchant-feed-header h3 { font-size: 1.4rem; font-weight: 900; margin: 0; color: var(--text-main); }
+.merchant-feed-header p { font-size: 0.8rem; color: var(--text-muted); margin: 0; }
+.merchant-feed-header .m-visit-btn { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 6px 15px; border-radius: 50px; font-weight: 800; font-size: 0.85rem; border: none; cursor: pointer; transition: 0.3s; }
+.merchant-feed-header .m-visit-btn:hover { background: var(--primary); color: white; }
+
+.store-group-title { font-size: 1.3rem; font-weight: 900; color: var(--text-main); margin: 30px 20px 15px; display: flex; align-items: center; gap: 10px; }
+.store-group-title::before { content:''; width:4px; height:20px; background:var(--primary); border-radius:10px; }
+
+/* ================= هيدر المتجر الداخلي (النسخة الكلاسيكية) ================= */
+.modern-store-header { position: relative; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.modern-store-cover { height: 180px; background: var(--primary-gradient); position: relative; }
+.modern-store-cover::after { content:''; position:absolute; inset:0; background: url('data:image/svg+xml;utf8,<svg opacity="0.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="none"/><path d="M0,50 Q25,25 50,50 T100,50" stroke="white" stroke-width="2" fill="none"/></svg>') repeat; }
+.modern-store-avatar { width: 100px; height: 100px; border-radius: 25px; border: 4px solid var(--bg-body); background: white; color: var(--primary); font-size: 3rem; font-weight: 900; display: flex; justify-content: center; align-items: center; position: absolute; bottom: -30px; right: 20px; box-shadow: var(--shadow-lg); z-index: 2; }
+.modern-store-info { padding: 40px 20px 0 20px; }
+.modern-store-info h1 { font-size: 1.8rem; font-weight: 900; margin-bottom: 5px; }
+.modern-store-info .s-type { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 4px 12px; border-radius: 50px; font-size: 0.85rem; font-weight: bold; display: inline-block; }
+
+/* ================= هيدر المتجر العصري (Modern Merchant Hero) ================= */
+.modern-merchant-hero { position: relative; height: 260px; border-radius: 0 0 40px 40px; overflow: hidden; margin-top: 15px; margin-bottom: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); display: flex; align-items: flex-end; justify-content: center; background: var(--bg-body); padding-bottom: 25px; }
+.hero-collage-bg { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 2px; opacity: 0.4; z-index: 1; }
+.hero-collage-bg img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(30%) contrast(120%); }
+.hero-shapes-overlay { position: absolute; inset: 0; z-index: 2; background: linear-gradient(180deg, rgba(15, 23, 42, 0.4) 0%, var(--bg-body) 100%); }
+.hero-shape-1 { position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: var(--primary); filter: blur(60px); opacity: 0.6; border-radius: 50%; }
+.hero-shape-2 { position: absolute; bottom: -50px; left: -50px; width: 250px; height: 250px; background: var(--accent); filter: blur(70px); opacity: 0.5; border-radius: 50%; }
+.hero-merchant-content { position: relative; z-index: 3; background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--border); padding: 15px 25px; border-radius: 25px; display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: 92%; max-width: 900px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); }
+.hm-right-info { display: flex; align-items: center; gap: 15px; }
+.hero-merchant-avatar { width: 65px; height: 65px; border-radius: 20px; background: var(--primary-gradient); color: white; font-size: 2rem; font-weight: 900; display: flex; justify-content: center; align-items: center; border: 3px solid var(--bg-body); box-shadow: 0 10px 20px var(--primary-glow); flex-shrink: 0; }
+.hm-text { text-align: right; }
+.hm-text h1 { font-size: 1.4rem; font-weight: 900; color: var(--text-main); margin-bottom: 2px; }
+.hm-text .m-type { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 2px 10px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; }
+.hm-username-badge { background: rgba(0, 0, 0, 0.6); color: #fff; padding: 6px 15px; border-radius: 50px; font-family: monospace; font-size: 0.95rem; font-weight: bold; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.2); direction: ltr; backdrop-filter: blur(5px); }
+
+/* ================= واجهة المتجر الاحترافية (Premium Storefront 2025) ================= */
+.store-immersive-hero { position: relative; width: 100%; margin-top: 15px; padding-top: 20px; padding-bottom: 40px; background: var(--bg-body); display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid var(--border); z-index: 10; }
+.store-cover-gradient { position: absolute; top: 0; left: 0; right: 0; height: 280px; background: linear-gradient(135deg, var(--primary), var(--accent)); opacity: 0.15; z-index: 0; overflow: hidden; mask-image: linear-gradient(to bottom, black 50%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%); }
+.store-profile-glass { position: relative; z-index: 2; background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--border); border-radius: 32px; padding: 25px; width: 90%; max-width: 600px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; align-items: center; text-align: center; transform: translateY(20px); }
+.sp-avatar-wrapper { position: relative; margin-top: -60px; margin-bottom: 15px; }
+.sp-avatar { width: 100px; height: 100px; border-radius: 30px; background: var(--primary-gradient); color: white; font-size: 3.5rem; font-weight: 900; display: flex; justify-content: center; align-items: center; border: 6px solid var(--bg-body); box-shadow: 0 15px 35px var(--primary-glow); }
+.sp-verified-badge { position: absolute; bottom: -5px; right: -5px; background: var(--success); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1rem; border: 4px solid var(--bg-body); }
+.sp-name { font-size: 1.8rem; font-weight: 900; color: var(--text-main); margin-bottom: 5px; line-height: 1.2; }
+.sp-username { font-size: 1rem; color: var(--primary); font-weight: 700; margin-bottom: 15px; font-family: monospace; letter-spacing: 1px;}
+.sp-bio { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+.sp-stats-row { display: flex; gap: 20px; justify-content: center; width: 100%; padding-top: 20px; border-top: 1px dashed var(--border); }
+.sp-stat { display: flex; flex-direction: column; align-items: center; }
+.sp-stat-val { font-size: 1.2rem; font-weight: 900; color: var(--text-main); }
+.sp-stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; }
+.store-premium-cover { height: 120px; background: linear-gradient(135deg, var(--primary), var(--accent)); position: relative; z-index: 1; overflow: hidden; }
+
+/* ================= واجهة التاجر الخارقة (Ultra Fast Storefront 2026) ================= */
+.ultra-hero-section { background: var(--bg-body); padding-bottom: 20px; margin-top: 0 !important; padding-top: 0 !important; border-bottom: 1px solid var(--border); position: relative; transition: opacity 0.3s ease, transform 0.3s ease !important; transform-origin: top center; }
+.ultra-cover { height: 100px; background: var(--primary); background-image: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); position: absolute; top: 0; left: 0; right: 0; z-index: 1; border-radius: 0; }
+.ultra-profile-card { background: var(--bg-card); margin: 30px 15px 10px; border-radius: 20px; padding: 12px 15px; position: relative; z-index: 2; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.ultra-profile-top { display: flex; align-items: center; gap: 10px; }
+.ultra-avatar { width: 55px; height: 55px; background: var(--primary-gradient); color: white; font-size: 1.8rem; font-weight: 900; display: flex; justify-content: center; align-items: center; border-radius: 16px; border: 3px solid var(--bg-card); flex-shrink: 0; }
+.ultra-info { flex: 1; overflow: hidden; }
+.ultra-name { font-size: 1.15rem; font-weight: 900; color: var(--text-main); margin-bottom: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ultra-username { font-size: 0.8rem; color: var(--text-muted); font-family: monospace; font-weight: bold; }
+.ultra-bio { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-top: 0; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.ultra-search-box { display: flex; align-items: center; background: var(--bg-body); border-radius: 14px; padding: 10px 15px; gap: 10px; border: 1px solid var(--border); }
+.ultra-search-box input { border: none; background: transparent; width: 100%; font-size: 0.95rem; font-family: 'Tajawal', sans-serif; font-weight: bold; outline: none; color: var(--text-main); }
+.ultra-search-box i { color: var(--primary); }
+.ultra-stats { display: flex; justify-content: space-around; padding-top: 8px; border-top: 1px dashed var(--border); }
+.ultra-stat-item { text-align: center; display: flex; flex-direction: column; gap: 3px; }
+.ultra-stat-val { font-size: 0.95rem; font-weight: 900; color: var(--text-main); }
+.ultra-stat-lbl { font-size: 0.7rem; color: var(--text-muted); font-weight: bold; }
+
+/* ================= الهيرو المطلق (Ultimate Store Hero) ================= */
+.ultimate-store-hero { position: relative; padding: 60px 20px 50px; background: var(--bg-card); border-radius: 0 0 40px 40px; overflow: hidden; text-align: center; margin-bottom: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.04); border-bottom: 1px solid var(--border); z-index: 10; display: flex; flex-direction: column; align-items: center; }
+.ush-bg-mesh { position: absolute; inset: 0; opacity: 0.6; z-index: 0; pointer-events: none; background-image: radial-gradient(at 0% 0%, var(--primary-glow) 0px, transparent 60%), radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.15) 0px, transparent 60%); }
+.ush-content { position: relative; z-index: 2; max-width: 800px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+.ush-avatar { width: 90px; height: 90px; border-radius: 28px; background: var(--primary-gradient); color: white; font-size: 3rem; font-weight: 900; display: flex; justify-content: center; align-items: center; box-shadow: 0 15px 35px var(--primary-glow); margin-bottom: 20px; border: 4px solid var(--bg-body); }
+.ush-title { font-size: 2.5rem; font-weight: 900; color: var(--text-main); margin-bottom: 12px; line-height: 1.2; letter-spacing: -0.5px; }
+.ush-welcome { font-size: 1.15rem; color: var(--text-muted); font-weight: 600; line-height: 1.7; max-width: 650px; margin-bottom: 25px; }
+.ush-badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.ush-badge { background: var(--bg-body); border: 1px solid var(--border); padding: 8px 18px; border-radius: 50px; font-size: 0.9rem; font-weight: 800; color: var(--primary); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 6px; }
+
+/* ================= البحث المحلي داخل المتجر والأقسام ================= */
+.store-local-search-container { padding: 0 20px 20px; position: sticky; top: calc(var(--header-height) - 5px); z-index: 50; }
+.store-local-search-box { background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 2px solid var(--primary); border-radius: 50px; display: flex; align-items: center; padding: 5px 20px; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.15); transition: 0.3s; }
+.store-local-search-box:focus-within { box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3); transform: translateY(-2px); }
+.store-local-search-box i { color: var(--primary); font-size: 1.2rem; margin-left: 10px; }
+.store-local-search-box input { border: none; background: transparent; flex: 1; padding: 12px 0; font-size: 1.05rem; font-weight: 700; color: var(--text-main); outline: none; }
+.store-category-block { margin-bottom: 35px; }
+.store-category-title { font-size: 1.4rem; font-weight: 900; color: var(--text-main); margin: 0 20px 15px; display: flex; align-items: center; gap: 10px; }
+.store-category-title::before { content: ''; width: 6px; height: 22px; background: var(--primary-gradient); border-radius: 10px; }
+
+/* ================= شبكات العرض الخاصة بمنتجات المتجر المستقل ================= */
+.store-premium-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 15px; padding: 15px 20px 30px; }
+.ultra-product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px 15px 100px; }
+
+/* 1. الكرت العصري (Store Item Card) */
+.store-item-card { background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.04); position: relative; cursor: pointer; }
+.store-item-card:hover { transform: translateY(-6px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--primary); }
+.sic-img-box { width: 100%; padding-top: 100%; position: relative; background: var(--border); }
+.sic-img-box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.sic-discount { position: absolute; top: 10px; right: 10px; background: var(--danger); color: white; padding: 4px 10px; border-radius: 50px; font-size: 0.8rem; font-weight: 900; z-index: 2; box-shadow: 0 4px 10px rgba(244,63,94,0.3); }
+.sic-details { padding: 15px; display: flex; flex-direction: column; flex: 1; }
+.sic-cat { font-size: 0.75rem; color: var(--primary); font-weight: 800; margin-bottom: 4px; }
+.sic-name { font-size: 1rem; font-weight: 900; color: var(--text-main); line-height: 1.4; margin-bottom: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sic-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; }
+.sic-price-box { display: flex; flex-direction: column; }
+.sic-price { font-size: 1.25rem; font-weight: 900; color: var(--text-main); }
+.sic-old { font-size: 0.85rem; text-decoration: line-through; color: var(--text-muted); font-weight: 600; }
+.sic-add-btn { width: 40px; height: 40px; border-radius: 14px; background: var(--primary-gradient); color: white; border: none; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); transition: 0.2s; }
+.sic-add-btn:active { transform: scale(0.9); }
+
+/* 2. الكرت الفاخر (Premium Product Card) */
+.premium-product-card { background: var(--bg-card); border-radius: 28px; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 10px 30px rgba(0,0,0,0.03); overflow: hidden; display: flex; flex-direction: column; position: relative; cursor: pointer; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.dark-mode .premium-product-card { border: 1px solid rgba(255,255,255,0.05); }
+.premium-product-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 40px rgba(79, 70, 229, 0.12); border-color: rgba(79, 70, 229, 0.3); }
+.ppc-img-box { width: 100%; padding-top: 100%; position: relative; background: var(--bg-body); overflow: hidden; }
+.ppc-img-box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 10px; transition: transform 0.5s ease; }
+.premium-product-card:hover .ppc-img-box img { transform: scale(1.1); }
+.ppc-discount { position: absolute; top: 12px; right: 12px; background: rgba(244, 63, 94, 0.1); color: var(--danger); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 6px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 900; z-index: 2; border: 1px solid rgba(244, 63, 94, 0.2); }
+.ppc-details { padding: 20px; display: flex; flex-direction: column; flex: 1; }
+.ppc-category { font-size: 0.8rem; color: var(--primary); font-weight: 800; margin-bottom: 6px; }
+.ppc-title { font-size: 1.1rem; font-weight: 900; color: var(--text-main); line-height: 1.4; margin-bottom: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ppc-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border); }
+.ppc-price-area { display: flex; flex-direction: column; }
+.ppc-price { font-size: 1.4rem; font-weight: 900; color: var(--text-main); line-height: 1; display:flex; align-items:baseline; gap:4px; }
+.ppc-price small { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; }
+.ppc-old-price { font-size: 0.9rem; text-decoration: line-through; color: var(--text-muted); font-weight: 600; margin-top: 4px; }
+.ppc-add-btn { width: 45px; height: 45px; border-radius: 16px; background: var(--bg-body); color: var(--primary); border: 2px solid var(--border); display: flex; justify-content: center; align-items: center; font-size: 1.3rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.ppc-add-btn:hover { background: var(--text-main); color: var(--bg-body); border-color: var(--text-main); transform: rotate(-10deg) scale(1.1); }
+.ppc-add-btn:active { transform: scale(0.9); }
+
+/* 3. الكرت الخارق السرعة (Ultra Card) */
+.ultra-card { background: var(--bg-card); border-radius: 18px; border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; cursor: pointer; contain: content; content-visibility: auto; will-change: transform; transform: translateZ(0); }
+.ultra-card:active { transform: scale(0.97); background: rgba(0,0,0,0.02); }
+.ultra-img-wrapper { width: 100%; aspect-ratio: 1 / 1; background: var(--bg-body); position: relative; padding: 10px; }
+.ultra-img-wrapper img { width: 100%; height: 100%; object-fit: contain; }
+.ultra-discount { position: absolute; top: 8px; right: 8px; background: var(--danger); color: white; padding: 2px 8px; border-radius: 8px; font-size: 0.75rem; font-weight: 900; }
+.ultra-card-body { padding: 12px; display: flex; flex-direction: column; flex: 1; }
+.ultra-card-cat { font-size: 0.7rem; color: var(--primary); font-weight: 800; margin-bottom: 4px; }
+.ultra-card-title { font-size: 0.95rem; font-weight: 900; color: var(--text-main); line-height: 1.3; margin-bottom: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ultra-card-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; }
+.ultra-price-box { display: flex; flex-direction: column; }
+.ultra-current-price { font-size: 1.2rem; font-weight: 900; color: var(--text-main); line-height: 1; display: flex; align-items: baseline; gap: 3px; }
+.ultra-current-price small { font-size: 0.75rem; color: var(--text-muted); }
+.ultra-old-price { font-size: 0.8rem; text-decoration: line-through; color: var(--text-muted); margin-top: 3px; }
+.ultra-add-btn { width: 36px; height: 36px; border-radius: 12px; background: var(--primary-gradient); color: white; border: none; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+
+/* 4. كرت المتجر بالتحميل التقدمي (Progressive Loading) */
+.store-product-card { background: var(--bg-card); border-radius: var(--store-radius); border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; }
+.store-product-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); border-color: var(--primary); }
+.prog-img-wrapper { position: relative; width: 100%; padding-top: 100%; background: var(--border); overflow: hidden; border-radius: var(--store-radius) var(--store-radius) 0 0; }
+.img-blur { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(15px); transform: scale(1.1); transition: opacity 0.5s ease-out; z-index: 1; }
+.img-hires { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.4s ease-in; z-index: 2; }
+.img-hires.loaded { opacity: 1; }
+.store-card-details { padding: 15px; display: flex; flex-direction: column; flex: 1; }
+.sc-cat { font-size: 0.75rem; color: var(--primary); font-weight: 800; margin-bottom: 5px; }
+.sc-name { font-size: 1.05rem; font-weight: 900; line-height: 1.4; margin-bottom: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sc-price-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; }
+.sc-price { font-size: 1.3rem; font-weight: 900; color: var(--text-main); }
+.sc-add-btn { width: 35px; height: 35px; border-radius: 50%; background: var(--primary-gradient); color: white; display: flex; justify-content: center; align-items: center; border: none; box-shadow: 0 4px 10px var(--primary-glow); transition: 0.2s; }
+.sc-add-btn:active { transform: scale(0.9); }
+
+/* ================= الهيكل العظمي الخاص بالمتجر المستقل (Skeletons) ================= */
+.store-skeleton { background: var(--bg-card); border-radius: var(--store-radius); height: 280px; position: relative; overflow: hidden; border: 1px solid var(--border); }
+.store-skeleton::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: skeleton-loading 1.5s infinite; }
+.dark-mode .store-skeleton::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); }
+
+/* ================= Media Queries (شاشات التابلت والكمبيوتر) ================= */
+@media (max-width: 480px) {
+    .hero-merchant-content { flex-direction: column; gap: 15px; text-align: center; justify-content: center; padding: 20px; }
+    .hm-right-info { flex-direction: column; text-align: center; }
+    .hm-text { text-align: center; }
+    .store-local-search-container { top: 60px; }
+    .ush-title { font-size: 1.8rem; margin-bottom: 8px;}
+    .ush-welcome { font-size: 0.95rem; margin-bottom: 20px;}
+    .ush-avatar { width: 75px; height: 75px; font-size: 2.2rem; border-radius: 22px;}
+    .ush-badge { padding: 6px 14px; font-size: 0.8rem; }
+}
+
+@media (min-width: 576px) {
+    .ultra-product-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px 20px 100px; }
+    .ultra-profile-card { max-width: 600px; margin: -50px auto 0; }
+}
+
+@media (min-width: 768px) {
+    .store-premium-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); padding: 30px 40px 100px; gap: 25px;}
+}
+/* ==============================================================
+   إلغاء الشريط العلوي القديم للمتجر (Isolated Header)
+   ============================================================== */
+
+/* 1. إخفاء الشريط العلوي القديم تماماً */
+.isolated-header {
+    display: none !important;
+}
+
+/* 2. إلغاء الفراغ العلوي للصفحة لكي يلتصق غلاف المتجر بأعلى الشاشة مباشرة */
+body.isolated-mode {
+    padding-top: 0 !important;
+    padding-bottom: var(--bottom-nav-height) !important;
+}
+
+/* 3. التأكد من أن الغلاف الملون (الهيرو) يبدأ من الحافة العلوية بدون أي مسافات */
+.ultra-hero-section {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* 4. إزالة الانحناء من أعلى الغلاف الملون ليتماشى مع حافة الشاشة */
+.ultra-cover {
+    border-radius: 0 0 30px 30px !important; /* انحناء من الأسفل فقط */
+}
+
+/* 5. تعديل شريط الأقسام (الكل، عروض...) ليلتصق بأعلى الشاشة تماماً عند النزول */
+.sticky-category-bar {
+    position: sticky !important;
+    top: 0 !important; /* الوقوف في أعلى الشاشة تماماً */
+    z-index: 190 !important;
+}
+
+/* 6. منع نزول شريط الأقسام عند التمرير (لأن الهيدر القديم تم حذفه) */
+body.header-is-scrolled .sticky-category-bar {
+    top: 0 !important; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important;
+}
+/* ==========================================================================
+   الكرت الديناميكي السريع للمتجر (مخصص للأجهزة الضعيفة ومتجاوب)
+   ========================================================================== */
+.dynamic-store-card {
+    background: var(--bg-card);
+    border-radius: 20px;
+    margin: 15px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.dsc-cover {
+    height: 85px;
+    width: 100%;
+    /* اللون سيتم حقنه برمجياً ليكون مختلف لكل متجر */
+}
+
+.dsc-body {
+    padding: 0 15px 15px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.dsc-avatar {
+    width: 75px;
+    height: 75px;
+    border-radius: 20px;
+    border: 4px solid var(--bg-card);
+    color: white;
+    font-size: 2.2rem;
+    font-weight: 900;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -37px; /* لرفعه فوق الغلاف */
+    margin-bottom: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.dsc-name {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--text-main);
+    margin-bottom: 2px;
+}
+
+.dsc-username {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: monospace;
+    font-weight: bold;
+    margin-bottom: 10px;
+    direction: ltr;
+}
+
+.dsc-bio {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 15px;
+    padding: 0 10px;
+}
+
+.dsc-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+}
+
+.dsc-info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-body);
+    padding: 10px 5px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    gap: 5px;
+}
+
+.dsc-info-item i {
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+.dsc-info-item span {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* حاوية البحث تحت الكرت */
+.dsc-search-wrapper {
+    padding: 0 15px 15px;
+}
+
+/* حالة المتجر الفارغ */
+.empty-store-state {
+    padding: 50px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+.empty-store-state i {
+    font-size: 4rem;
+    color: var(--border);
+}
+.empty-store-state h3 {
+    color: var(--text-main);
+    font-weight: 900;
+}
+.empty-store-state p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+/* ==========================================================================
+   الكرت الديناميكي السريع للمتجر (مخصص للأجهزة الضعيفة ومتجاوب)
+   ========================================================================== */
+.dynamic-store-card {
+    background: var(--bg-card);
+    border-radius: 24px;
+    margin: 0 15px 15px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* طبقة صور المنتجات */
+.dsc-collage {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    z-index: 1;
+}
+
+.dsc-collage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.5; /* تخفيف سطوع الصور لتندمج */
+    filter: grayscale(15%);
+}
+
+/* طبقة اللون المتدرج فوق الصور */
+.dsc-gradient-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    opacity: 0.9;
+    mix-blend-mode: multiply; /* سر اندماج اللون مع صور المنتجات */
+}
+
+/* مساحة الغلاف العلوي */
+.dsc-cover {
+    height: 85px;
+    width: 100%;
+    position: relative;
+    z-index: 3;
+}
+
+/* جسم الكرت (النصوص والمعلومات) */
+.dsc-body {
+    padding: 0 15px 15px;
+    position: relative;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: var(--bg-card);
+    border-radius: 24px 24px 0 0;
+    margin-top: -15px;
+}
+
+/* تفعيل التأثير الزجاجي إذا وجدت صور خلفية */
+.dynamic-store-card.has-collage .dsc-body {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+.dark-mode .dynamic-store-card.has-collage .dsc-body {
+    background: rgba(15, 23, 42, 0.9);
+}
+
+.dsc-avatar {
+    width: 75px;
+    height: 75px;
+    border-radius: 20px;
+    border: 4px solid var(--bg-card);
+    color: white;
+    font-size: 2.2rem;
+    font-weight: 900;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -37px;
+    margin-bottom: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    position: relative;
+    z-index: 5;
+}
+
+/* استثناء الإطار الأبيض في الوضع الليلي */
+.dark-mode .dsc-avatar { border-color: var(--bg-card); }
+
+.dsc-name { font-size: 1.3rem; font-weight: 900; color: var(--text-main); margin-bottom: 2px; }
+.dsc-username { font-size: 0.85rem; color: var(--text-muted); font-family: monospace; font-weight: bold; margin-bottom: 10px; direction: ltr; }
+.dsc-bio { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px; padding: 0 10px; }
+
+.dsc-info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+.dsc-info-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: var(--bg-body); padding: 10px 5px; border-radius: 14px;
+    border: 1px solid var(--border); gap: 5px; transition: transform 0.2s;
+}
+.dsc-info-item:active { transform: scale(0.95); }
+.dsc-info-item i { font-size: 1.1rem; }
+.dsc-info-item span {
+    font-size: 0.75rem; font-weight: 800; color: var(--text-main);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+
+/* ==========================================================================
+   مربع البحث الحديث
+   ========================================================================== */
+.modern-search-wrapper { padding: 0 15px 15px; }
+
+.modern-search-box {
+    display: flex;
+    align-items: center;
+    background: var(--bg-card);
+    border-radius: 50px; /* شكل بيضاوي كامل */
+    padding: 6px 6px 6px 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.modern-search-box:focus-within {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    border-color: rgba(0,0,0,0.1);
+}
+
+.modern-search-box .search-icon { font-size: 1.1rem; margin-left: 10px; }
+
+.modern-search-box input {
+    flex: 1; border: none; background: transparent; font-size: 0.95rem;
+    font-weight: 700; color: var(--text-main); outline: none; padding: 8px 0;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.modern-search-box .search-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    color: white; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* حالة المتجر الفارغ */
+.empty-store-state { padding: 50px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.empty-store-state i { font-size: 4rem; color: var(--border); }
+.empty-store-state h3 { color: var(--text-main); font-weight: 900; }
+.empty-store-state p { color: var(--text-muted); font-size: 0.95rem; }
+/* ==========================================================================
+   إصلاح تداخل المحتوى مع الشريط العلوي في وضع المتجر المستقل
+   ========================================================================== */
+body.isolated-mode {
+    /* حساب المسافة: ارتفاع الهيدر + شريط الفئات الفرعي + 15 بكسل مسافة تنفس */
+    padding-top: calc(var(--header-height) + var(--sub-nav-height) + 15px) !important;
+}
+
+/* لضمان عدم وجود مسافات سلبية تسحب الكرت للأعلى */
+.store-hero-wrapper {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+/* طبقة صور المنتجات */
+.dsc-collage {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    z-index: 1;
+}
+
+.dsc-collage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.95; /* تم زيادة الوضوح لتظهر الصور بشكل ممتاز */
+}
+
+/* طبقة اللون المتدرج الأساسية (للمتجر الفارغ) */
+.dsc-gradient-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    opacity: 1; /* لون كامل إذا لم يكن هناك صور */
+}
+
+/* تخفيف اللون الشفاف بقوة إذا كان هناك صور منتجات */
+.dynamic-store-card.has-collage .dsc-gradient-overlay {
+    opacity: 0.3; /* تم تخفيف اللون جداً لتظهر الصور خلفه بوضوح */
+}
+
+/* مساحة الغلاف العلوي */
+.dsc-cover {
+    height: 85px;
+    width: 100%;
+    position: relative;
+    z-index: 3;
+}
+
+/* جسم الكرت (النصوص والمعلومات) */
+.dsc-body {
+    padding: 25px 15px 15px; /* تم تعديل المسافات العلوية لتعويض غياب مربع الحرف */
+    position: relative;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: var(--bg-card);
+    border-radius: 24px 24px 0 0;
+    margin-top: -20px;
+}
+/* ==========================================================================
+   طبقة صور المنتجات (مرنة وتلقائية التوزيع)
+   ========================================================================== */
+.dsc-collage {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-wrap: wrap; /* السماح بتعدد الأسطر */
+    align-content: flex-start;
+    z-index: 1;
+    overflow: hidden; /* إخفاء ما يفيض خارج الكرت */
+}
+
+.dsc-collage img {
+    flex: 1 1 25%; /* تأخذ ربع العرض تقريباً لتكوين شبكة */
+    height: 33.33%; /* الارتفاع ثلث المساحة */
+    min-width: 25%; /* منع الصور من أن تصبح نحيفة جداً */
+    object-fit: cover;
+    opacity: 0.95;
+}
+
+/* إذا كان عدد الصور قليل (أقل من 4)، نجعلها تأخذ مساحة أكبر */
+.dsc-collage.count-1 img { flex: 1 1 100%; height: 100%; }
+.dsc-collage.count-2 img { flex: 1 1 50%; height: 100%; }
+.dsc-collage.count-3 img { flex: 1 1 33.33%; height: 100%; }
+.dsc-collage.count-4 img { flex: 1 1 50%; height: 50%; }

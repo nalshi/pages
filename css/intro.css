@@ -1,0 +1,278 @@
+/* ==========================================================================
+   Intro & Splash Screen Styles (intro.css) - نالش
+   يحتوي على: شاشة التحميل السينمائية، الهولوجرام، حركات البناء، والانترو الذكي
+   ========================================================================== */
+
+/* ----------------------------------
+   1. الحاوية الأساسية للانترو (Splash Screen)
+------------------------------------- */
+#smart-splash-screen {
+    position: fixed; 
+    inset: 0; 
+    z-index: 999999;
+    background: #f8fafc;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    overflow: hidden;
+    transition: opacity 0.6s ease-out, background-color 0.4s ease;
+    will-change: opacity;
+}
+
+html.dark-mode #smart-splash-screen {
+    background: #0b1120;
+}
+
+/* توهج مركزي ناعم في الخلفية */
+.intro-bg-glow {
+    position: absolute; 
+    width: 100vw; 
+    height: 100vw;
+    background: radial-gradient(circle, rgba(79, 70, 229, 0.05) 0%, transparent 70%);
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+html.dark-mode .intro-bg-glow {
+    background: radial-gradient(circle, rgba(0, 198, 251, 0.08) 0%, transparent 60%);
+}
+
+/* ----------------------------------
+   2. تصميم حروف الشعار (N-A-L-S-H)
+------------------------------------- */
+.nalsh-brand-intro {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 4.8rem; 
+    font-weight: 900; 
+    letter-spacing: 5px;
+    display: flex; 
+    gap: 4px;
+    z-index: 2; 
+    margin-top: 130px;
+    direction: ltr;
+}
+
+.nalsh-brand-intro span {
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+    animation: letterBounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* ألوان الحروف في الوضع الفاتح */
+.nalsh-brand-intro span:nth-child(1) { animation-delay: 0.1s; color: #4F46E5; }
+.nalsh-brand-intro span:nth-child(2) { animation-delay: 0.2s; color: #3b82f6; }
+.nalsh-brand-intro span:nth-child(3) { animation-delay: 0.3s; color: #06b6d4; }
+.nalsh-brand-intro span:nth-child(4) { animation-delay: 0.4s; color: #14b8a6; }
+.nalsh-brand-intro span:nth-child(5) { animation-delay: 0.5s; color: #10B981; }
+
+/* ألوان الحروف في الوضع الداكن (نيون) */
+html.dark-mode .nalsh-brand-intro span { text-shadow: 0 0 15px currentColor; }
+html.dark-mode .nalsh-brand-intro span:nth-child(1) { color: #a855f7; }
+html.dark-mode .nalsh-brand-intro span:nth-child(2) { color: #ec4899; }
+html.dark-mode .nalsh-brand-intro span:nth-child(3) { color: #3b82f6; }
+html.dark-mode .nalsh-brand-intro span:nth-child(4) { color: #00c6fb; }
+html.dark-mode .nalsh-brand-intro span:nth-child(5) { color: #2dd4bf; }
+
+@keyframes letterBounce {
+    0% { opacity: 0; transform: translateY(30px) scale(0.8); }
+    50% { opacity: 1; transform: translateY(-10px) scale(1.05); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ----------------------------------
+   3. شريط التحميل العصري (Loader Line)
+------------------------------------- */
+.intro-loader-line {
+    width: 200px; 
+    height: 4px;
+    background: rgba(0, 0, 0, 0.05);
+    margin-top: 35px; 
+    border-radius: 50px;
+    position: relative; 
+    overflow: hidden;
+    z-index: 2;
+}
+
+html.dark-mode .intro-loader-line { background: rgba(255, 255, 255, 0.05); }
+
+.intro-loader-line::after {
+    content: ''; 
+    position: absolute; 
+    top: 0; left: 0; 
+    height: 100%; 
+    width: 30%;
+    background: linear-gradient(90deg, #4F46E5, #06b6d4);
+    border-radius: 50px;
+    animation: loaderScan 1s ease-in-out infinite alternate;
+}
+
+html.dark-mode .intro-loader-line::after {
+    background: linear-gradient(90deg, #a855f7, #00c6fb);
+    box-shadow: 0 0 10px #00c6fb;
+}
+
+@keyframes loaderScan {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(350%); }
+}
+
+.intro-status-text {
+    margin-top: 15px; 
+    font-size: 0.9rem; 
+    font-weight: 800;
+    color: #64748b; 
+    letter-spacing: 1px;
+    z-index: 2; 
+    animation: pulseOpacity 1.5s infinite;
+}
+
+html.dark-mode .intro-status-text { color: #94a3b8; }
+
+@keyframes pulseOpacity {
+    0%, 100% { opacity: 0.6; } 
+    50% { opacity: 1; }
+}
+
+/* ----------------------------------
+   4. إخفاء المحتوى الافتراضي وقفل الشاشة
+------------------------------------- */
+#main-content, .header-container, .mobile-bar, .isolated-header, .isolated-bottom-bar {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease, visibility 0.8s ease;
+    pointer-events: none; 
+}
+
+body.store-ready #main-content, 
+body.store-ready .header-container, 
+body.store-ready .mobile-bar,
+body.store-ready .isolated-header,
+body.store-ready .isolated-bottom-bar {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+body.intro-locked {
+    overflow: hidden !important;
+    touch-action: none;
+    pointer-events: none;
+}
+
+/* استثناء شاشة التحميل والروبوت لضمان عملهم أثناء الانترو */
+#smart-splash-screen, .cyber-robot, .robot-speech-bubble {
+    pointer-events: auto !important;
+}
+
+/* ----------------------------------
+   5. وضع الروبوت الخاص بالانترو (Intro Mode)
+------------------------------------- */
+.cyber-robot.intro-mode {
+    top: 25% !important;
+    left: 50% !important;
+    bottom: auto !important;
+    transform: translate3d(-50%, -50%, 0) scale(1.5) !important;
+    z-index: 9999999 !important;
+    pointer-events: none !important; /* تعطيل النقر عليه أثناء الانترو */
+}
+
+.cyber-robot.intro-mode::after {
+    content: ''; position: absolute; bottom: -60px; left: 50%; 
+    transform: translateX(-50%); width: 100px; height: 30px;
+    background: radial-gradient(ellipse, rgba(0, 198, 251, 0.4) 0%, transparent 70%);
+    animation: pulseBase 1.5s infinite alternate;
+}
+
+@keyframes pulseBase {
+    0% { transform: translateX(-50%) scale(0.8); opacity: 0.5; }
+    100% { transform: translateX(-50%) scale(1.2); opacity: 1; }
+}
+
+/* ----------------------------------
+   6. حركات تركيب وبناء الصفحة (Build Animation)
+------------------------------------- */
+.intro-hidden {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    filter: blur(10px);
+    pointer-events: none;
+}
+
+.intro-reveal {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+    pointer-events: auto;
+    transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.4s ease-out;
+}
+
+.build-laser {
+    position: fixed;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), #00ffff, #ffffff);
+    box-shadow: 0 0 15px #00ffff, 0 0 30px var(--primary);
+    border-radius: 4px;
+    z-index: 100000;
+    transform-origin: left center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+.building-flash {
+    animation: element-build-flash 0.8s ease-out forwards;
+}
+
+@keyframes element-build-flash {
+    0% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0); border-color: transparent; }
+    50% { box-shadow: 0 0 30px 5px rgba(0, 255, 255, 0.6); border-color: #00ffff; }
+    100% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0); border-color: var(--border); }
+}
+
+/* ----------------------------------
+   7. العداد القديم والهولوجرام (احتياطي / يمكن الاستغناء عنه)
+------------------------------------- */
+.boot-loader-wrap { text-align: center; position: relative; z-index: 10; }
+.boot-percentage {
+    font-size: 3.5rem; font-weight: 900; line-height: 1;
+    background: linear-gradient(135deg, #fff, var(--primary));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-family: monospace;
+}
+.boot-label { font-size: 1rem; color: var(--text-muted); font-weight: 800; margin-top: 10px; letter-spacing: 2px; text-transform: uppercase; }
+.hologram-platform {
+    width: 200px; height: 20px; background: var(--primary);
+    filter: blur(40px); border-radius: 50%; opacity: 0.4;
+    position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%);
+}
+.cyber-grid-bg {
+    position: absolute; inset: -50%;
+    background-image: linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    transform: perspective(500px) rotateX(60deg) translateY(-100px);
+    animation: gridMove 10s linear infinite; z-index: 1;
+}
+@keyframes gridMove {
+    0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+    100% { transform: perspective(500px) rotateX(60deg) translateY(40px); }
+}
+
+/* إخفاء بقايا شاشات التحميل القديمة إن وجدت في HTML */
+.splash-logo-container, .splash-title, .splash-status-text, .splash-loader-bar { display: none !important; }
+ @keyframes introReveal {
+                    to { opacity: 1; transform: scale(1) translateY(0); }
+                }
+                @keyframes loaderSwipe {
+                    0% { left: -40%; }
+                    50% { left: 100%; }
+                    100% { left: -40%; }
+                }
+                @keyframes pulseGlow {
+                    from { transform: scale(0.8); opacity: 0.2; }
+                    to { transform: scale(1.2); opacity: 0.5; }
+                }

@@ -1,0 +1,252 @@
+/* ==========================================================================
+   App Core Styles (app.css) - نالش
+   يحتوي على: المتغيرات العامة، هيكل الصفحة، النوافذ المنبثقة، الإشعارات، والأساسيات
+   ========================================================================== */
+
+/* ----------------------------------
+   1. المتغيرات والألوان الأساسية (Variables & Themes)
+------------------------------------- */
+:root {
+    --primary-glow: transparent;
+    --primary: #4F46E5;
+    --primary-gradient: linear-gradient(135deg, #4F46E5, #06b6d4);
+    --accent: #14b8a6;
+    --bg-body: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: rgba(0, 0, 0, 0.05);
+    --success: #10B981;
+    --danger: #f43f5e;
+    --warning: #f59e0b;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-lg: 0 4px 10px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --radius-xl: 20px;
+    --radius-lg: 16px;
+    --glass-bg: rgba(255, 255, 255, 0.98);
+    --header-height: 75px;
+    --sub-nav-height: 55px;
+    --bottom-nav-height: 75px;
+}
+
+html.dark-mode, body.dark-mode {
+    --primary: #6366f1;
+    --primary-gradient: linear-gradient(135deg, #6366f1, #2dd4bf);
+    --bg-body: #0b1120;
+    --bg-card: #151e2e;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border: rgba(255, 255, 255, 0.03);
+    --glass-bg: rgba(21, 30, 46, 0.98);
+}
+
+.theme-transitioning { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+
+/* ----------------------------------
+   2. الإعدادات العامة (Reset & Body)
+------------------------------------- */
+* { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; }
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    overflow-x: hidden;
+    padding-bottom: var(--bottom-nav-height);
+    padding-top: calc(var(--header-height) + var(--sub-nav-height) + 10px);
+    -webkit-overflow-scrolling: touch;
+    background-image: none !important;
+}
+
+body.isolated-mode {
+    padding-top: calc(var(--header-height) + var(--sub-nav-height) + 10px) !important;
+    background-color: var(--bg-body);
+}
+
+body.no-copy {
+    -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none;
+}
+body.no-copy input, body.no-copy textarea {
+    -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
+}
+body.body-no-scroll, body.intro-locked { 
+    overflow: hidden !important; touch-action: none; pointer-events: none;
+}
+body.store-ready { pointer-events: auto; }
+
+/* ----------------------------------
+   3. العناصر الهيكلية (Page Structure)
+------------------------------------- */
+.page-body { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; transform: translateZ(0); }
+.page-footer { padding: 20px; border-top: 1px solid var(--border); background: var(--bg-body); z-index: 10; padding-bottom: calc(20px + env(safe-area-inset-bottom)); position: relative; }
+
+/* الأزرار العامة */
+.btn-action { width: 100%; padding: 15px; border: none; border-radius: 16px; font-weight: 900; font-size: 1.1rem; cursor: pointer; text-align: center; display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.3s; position: relative; overflow: hidden; }
+.btn-action.primary { background: var(--primary); color: white; }
+.btn-action:active { transform: scale(0.95) !important; opacity: 0.9; }
+.btn-action:disabled { background: var(--border) !important; color: var(--text-muted) !important; cursor: not-allowed; box-shadow: none !important; transform: none !important; }
+
+/* ----------------------------------
+   4. النوافذ المنبثقة والطبقات (Modals & Overlays)
+------------------------------------- */
+.page-overlay, .modal-overlay { 
+    position: fixed; inset: 0; background-color: var(--bg-body); z-index: 1000; display: flex; flex-direction: column; transform: translate3d(0, 100%, 0); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.35s; visibility: hidden; will-change: transform; 
+}
+.modal-overlay { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px); z-index: 1500; opacity: 0; transform: none; }
+.page-overlay.open { transform: translate3d(0, 0, 0); visibility: visible; }
+.modal-overlay.open { opacity: 1; visibility: visible; }
+
+.sheet-modal { 
+    position: fixed; bottom: 0; left: 0; right: 0; max-height: 90vh; background: var(--bg-card); border-radius: 24px 24px 0 0; z-index: 1600; display: flex; flex-direction: column; transform: translate3d(0, 100%, 0); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); border-top: 1px solid var(--border); box-shadow: 0 -20px 40px rgba(0,0,0,0.1); 
+}
+.sheet-modal.open { transform: translate3d(0, 0, 0); }
+.sheet-handle { padding: 20px; display: flex; justify-content: center; cursor: grab; background: transparent; }
+.sheet-handle div { width: 60px; height: 6px; background: var(--text-muted); opacity: 0.3; border-radius: 10px; }
+.sheet-body { padding: 0 25px 25px 25px; flex: 1; overflow-y: auto; }
+.sheet-footer { padding: 20px 25px; border-top: 1px solid var(--border); background: var(--bg-card); padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+
+.modern-close-sheet { position: absolute; top: 15px; left: 15px; width: 36px; height: 36px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; z-index: 20; }
+.modern-close-sheet:hover { background: var(--danger); color: white; transform: rotate(90deg) scale(1.1); }
+
+/* نافذة التأكيد (Confirmation Modal) */
+#confirmation-modal .confirmation-box { background: var(--bg-body); padding: 30px; border-radius: var(--radius-xl); width: 90%; max-width: 400px; text-align: center; box-shadow: var(--shadow-lg); }
+
+/* ----------------------------------
+   5. الإشعارات والتحميل (Toasts & Loaders)
+------------------------------------- */
+.toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: var(--text-main); color: var(--bg-body); padding: 12px 25px; border-radius: 50px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9999; display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.1rem; transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); width: max-content; white-space: nowrap; }
+.toast.show { bottom: calc(var(--bottom-nav-height) + 20px); }
+
+.loading-spinner-bottom { text-align: center; padding: 20px; color: var(--primary); display: none; }
+.loading-spinner-bottom i { font-size: 2.5rem; animation: spin 1s linear infinite; }
+.spinner { width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.4); border-left-color: white; border-radius: 50%; animation: spin 1s linear infinite; }
+
+/* ----------------------------------
+   6. التنبيهات الخاصة (PWA & Unsupported)
+------------------------------------- */
+#pwa-install-banner { position: fixed; bottom: -150px; left: 50%; transform: translateX(-50%); background: var(--bg-card); border: 1px solid var(--primary); padding: 12px 20px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 15px; z-index: 100000; transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); width: max-content; max-width: 90vw; }
+#pwa-install-banner.show { bottom: 100px; }
+#pwa-install-banner .pwa-text { font-family: 'Tajawal', sans-serif; color: var(--text-main); font-weight: 800; font-size: 0.95rem; }
+#pwa-install-btn { background: var(--primary-gradient); color: white; border: none; padding: 8px 20px; border-radius: 20px; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); }
+#pwa-install-btn:active { transform: scale(0.95); }
+#pwa-close-btn { background: transparent !important; color: var(--danger) !important; border: none; padding: 5px !important; font-size: 1.2rem; cursor: pointer; }
+
+#unsupported-browser { position: fixed; inset: 0; z-index: 100001; background: var(--bg-body); color: var(--text-main); display: none; flex-direction: column; justify-content: center; align-items: center; padding: 40px; text-align: center; }
+#unsupported-browser i { font-size: 5rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
+#unsupported-browser h2 { font-size: 2.5rem; font-weight: 900; }
+#unsupported-browser p { font-size: 1.2rem; color: var(--text-muted); max-width: 600px; line-height: 1.7; }
+
+/* ----------------------------------
+   7. أساسيات الأنميشن (Global Animations)
+------------------------------------- */
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.fade-in-stagger { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+.fade-in-item { animation: fadeInItem 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards; opacity: 0; transform: translateY(15px); }
+@keyframes fadeInItem { to { opacity: 1; transform: translateY(0); } }
+
+/* ----------------------------------
+   8. تسريع الأداء المطلق (Extreme Performance Overrides)
+------------------------------------- */
+* { animation-duration: 0.3s !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; border-color: transparent !important; }
+.fade-in-item, .fade-in-stagger { animation: none !important; opacity: 1 !important; transform: none !important; }
+.store-cover-gradient::after, .ush-bg-mesh, .cyber-grid-bg { display: none !important; animation: none !important; }
+input:not(.store-local-search-box input), textarea, .phone-input-container { border: 1px solid rgba(150, 150, 150, 0.2) !important; }
+
+/* ----------------------------------
+   9. الشاشات الكبيرة (Desktop Base)
+------------------------------------- */
+@media (min-width: 768px) {
+    .sheet-modal { width: 500px; left: 50%; margin-left: -250px; border-radius: 24px 24px 0 0; border: 1px solid var(--border); }
+}
+/* =========================================================
+   تعديلات النوافذ المنبثقة لتبدو مدمجة مع الأشرطة
+   ========================================================= */
+.page-overlay { 
+    position: fixed; 
+    inset: 0; 
+    background-color: var(--bg-body); 
+    z-index: 1000; 
+    display: flex; 
+    flex-direction: column; 
+    transform: translate3d(0, 100%, 0); 
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.35s; 
+    visibility: hidden; 
+    will-change: transform; 
+}
+
+/* تنسيق رأس النافذة ليطابق الشريط العلوي الأساسي تماماً */
+.page-header {
+    height: var(--header-height);
+    background: var(--bg-card) !important;
+    border-bottom: 1px solid var(--border) !important;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 15px;
+    flex-shrink: 0;
+    width: 100%;
+    box-shadow: var(--shadow-sm);
+    z-index: 100;
+}
+
+.page-header h3 {
+    font-size: 1.3rem;
+    font-weight: 900;
+    margin: 0;
+    color: var(--text-main);
+    flex: 1;
+}
+
+.page-header .icon-btn i {
+    font-size: 1.2rem;
+    color: var(--text-main);
+}
+
+/* إضافة مساحة سفلية للجسم لمنع اختفاء المحتوى خلف الشريط السفلي */
+.page-body { 
+    flex: 1; 
+    overflow-y: auto; 
+    padding: 20px; 
+    /* المساحة السفلية ضرورية جداً */
+    padding-bottom: calc(var(--bottom-nav-height) + 30px); 
+    -webkit-overflow-scrolling: touch; 
+    transform: translateZ(0); 
+}
+.page-footer { 
+    padding: 20px; 
+    border-top: 1px solid var(--border); 
+    background: var(--bg-body); 
+    z-index: 10; 
+    position: relative; 
+    /* 🟢 السر هنا: إضافة ارتفاع الشريط السفلي + مساحة الأمان السفلية للآيفون */
+    padding-bottom: calc(var(--bottom-nav-height) + 20px + env(safe-area-inset-bottom)) !important; 
+}
+/* 1. منع مربع النسخ والقائمة المنسدلة في نظام iOS و Android */
+*:not(input):not(textarea) {
+    -webkit-touch-callout: none !important; /* منع ظهور قائمة المشاركة والنسخ */
+    -webkit-user-select: none !important;   /* سفاري وكروم */
+    -khtml-user-select: none !important;
+    -moz-user-select: none !important;      /* فايرفوكس */
+    -ms-user-select: none !important;       /* إيدج */
+    user-select: none !important;           /* الإصدار القياسي */
+}
+
+/* 2. إزالة المربع الرمادي الشفاف الذي يظهر عند النقر على الأزرار في الهواتف */
+button, a, .nav-item, .product-card-compact, .cyber-robot {
+    -webkit-tap-highlight-color: transparent !important;
+    outline: none !important;
+}
+
+/* 3. استثناء حقول الإدخال (لكي يستطيع المستخدم كتابة رقمه وكود التحقق والبحث) */
+input, textarea {
+    -webkit-user-select: auto !important;
+    user-select: auto !important;
+}
+
+/* 4. منع السحب المطاطي للصفحة (Overscroll) الذي يسبب اهتزازاً في الهواتف */
+body {
+    overscroll-behavior-y: none;
+}

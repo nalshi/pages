@@ -1,0 +1,449 @@
+/* ==========================================================================
+   Checkout & Map Styles (checkout.css) - نالش
+   يحتوي على: ستايلات صفحة الدفع، ملخص الطلب، الخريطة، واختيار العنوان
+   ========================================================================== */
+
+/* ----------------------------------
+   1. كروت المتاجر في صفحة الدفع
+------------------------------------- */
+.checkout-merchant-card {
+    background: var(--bg-card) !important;
+    border: none !important;
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: none !important;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    color: var(--text-main) !important;
+}
+
+.checkout-merchant-card::before {
+    content: '';
+    position: absolute; right: 0; top: 0; bottom: 0; width: 5px;
+    background: var(--primary-gradient);
+}
+
+.checkout-merchant-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 15px; border-bottom: none !important; padding-bottom: 10px;
+}
+
+.checkout-merchant-header h4 {
+    font-size: 1.1rem; font-weight: 900; color: var(--primary); margin: 0;
+    display: flex; align-items: center; gap: 8px;
+}
+
+.checkout-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.95rem; margin-bottom: 12px; color: var(--text-main); font-weight: 700;
+}
+
+.checkout-row .text-muted { 
+    color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 8px;
+}
+
+.checkout-row.total {
+    font-size: 1.15rem; font-weight: 900; color: var(--text-main);
+    border-top: 1px solid var(--border); padding-top: 15px; margin-top: 5px;
+}
+
+/* ----------------------------------
+   2. الإجمالي النهائي ومسافة التوصيل
+------------------------------------- */
+.checkout-grand-total-box {
+    background: var(--bg-card) !important;
+    border: 2px solid rgba(16, 185, 129, 0.3);
+    border-radius: var(--radius-xl);
+    padding: 25px; text-align: center; margin-top: 25px;
+    box-shadow: none !important;
+    color: var(--text-main) !important;
+}
+
+.checkout-grand-total-box span { 
+    display: block; font-size: 1rem; color: var(--text-muted); font-weight: 800; margin-bottom: 8px; 
+}
+
+.checkout-grand-total-box strong { 
+    font-size: 2.2rem; color: var(--success); font-weight: 900; text-shadow: 0 2px 5px rgba(16, 185, 129, 0.2); 
+}
+
+.delivery-distance-badge {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* ----------------------------------
+   3. ملخص العنوان وتأكيد الطلب
+------------------------------------- */
+#confirm-breakdown-container { 
+    display: flex; flex-direction: column; gap: 10px; 
+}
+
+#confirm-user-address {
+    background: var(--bg-body);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.address-display-card { 
+    background: var(--bg-card) !important; 
+    border: none !important; 
+    border-radius: var(--radius-xl); 
+    padding: 25px; text-align: right; margin-bottom: 25px; line-height: 1.8; 
+    box-shadow: none !important;
+    color: var(--text-main) !important;
+}
+
+.address-display-card p.title {
+    font-size: 1.1rem; font-weight: 900; color: var(--primary); margin-bottom: 15px;
+    border-bottom: 2px dashed var(--border); padding-bottom: 10px;
+}
+
+/* ----------------------------------
+   4. الخريطة وتحديد الموقع (Map & Location)
+------------------------------------- */
+.map-section { margin-bottom: 25px; position: relative; }
+.map-section label { display: block; font-weight: 800; margin-bottom: 10px; font-size: 1rem; color: var(--text-main); }
+
+#map-container {
+    height: 320px;
+    border-radius: var(--radius-xl);
+    border: 2px solid var(--border);
+    margin-bottom: 15px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-body);
+}
+
+#map-container .leaflet-container { z-index: 1; font-family: 'Tajawal', sans-serif; }
+
+.leaflet-bar { box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important; border: none !important; border-radius: 12px !important; overflow: hidden; }
+.leaflet-bar a { background-color: var(--bg-card) !important; color: var(--text-main) !important; width: 40px !important; height: 40px !important; line-height: 40px !important; transition: 0.3s !important; border-bottom: 1px solid var(--border) !important;}
+.leaflet-bar a:hover { background-color: var(--primary) !important; color: white !important; }
+
+#find-me-btn {
+    position: absolute; top: 10px; right: 10px; z-index: 401;
+    background: var(--primary-gradient); color: white; width: 45px; height: 45px;
+    border-radius: 50%; border: none; box-shadow: 0 8px 15px rgba(79, 70, 229, 0.4);
+    font-size: 1.3rem; cursor: pointer; display: flex; justify-content: center; align-items: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+#find-me-btn:hover { transform: scale(1.1); box-shadow: 0 10px 20px rgba(79, 70, 229, 0.5); }
+
+#map-instruction {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 401;
+    background: var(--glass-bg); backdrop-filter: blur(10px); color: var(--text-main);
+    padding: 10px 20px; border-radius: 50px; font-size: 0.95rem; font-weight: 800;
+    pointer-events: none; box-shadow: var(--shadow-md); border: 1px solid var(--border);
+}
+
+#lock-location-btn {
+    position: absolute; top: 70px; right: 10px; z-index: 401;
+    background: var(--success); color: white; width: 45px; height: 45px;
+    border-radius: 50%; border: none; box-shadow: 0 8px 15px rgba(16, 185, 129, 0.4);
+    font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+#lock-location-btn:hover { transform: scale(1.1); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.5); }
+
+.leaflet-control-attribution { display: none !important; }
+.center-map-pin {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%);
+    font-size: 3rem; color: var(--danger); z-index: 1000; pointer-events: none;
+    text-shadow: 0 5px 10px rgba(0,0,0,0.3); transition: transform 0.2s ease;
+}
+.map-is-moving .center-map-pin { transform: translate(-50%, -120%); }
+.leaflet-routing-container { display: none !important; }
+
+/* ----------------------------------
+   5. بحث الخريطة المخصص لليمن
+------------------------------------- */
+.custom-map-search {
+    position: absolute; top: 15px; left: 50%; transform: translateX(-50%); z-index: 1000;
+    width: 90%; max-width: 280px; background: var(--bg-card); border-radius: 50px;
+    display: flex; align-items: center; padding: 6px 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border: 2px solid var(--primary); backdrop-filter: blur(10px); transition: 0.3s;
+}
+.custom-map-search:focus-within { box-shadow: 0 10px 30px rgba(79, 70, 229, 0.4); border-color: var(--accent); }
+.custom-map-search input {
+    border: none !important; background: transparent !important; flex: 1; padding: 6px 8px;
+    font-size: 0.9rem; font-weight: 800; color: var(--text-main); outline: none; box-shadow: none !important;
+}
+.custom-map-search i { color: var(--primary); font-size: 1.1rem; }
+
+.search-results-dropdown {
+    position: absolute; top: 60px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 280px;
+    background: var(--bg-card); border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    z-index: 1000; max-height: 220px; overflow-y: auto; display: none; border: 1px solid var(--border);
+}
+.search-result-item {
+    padding: 10px 15px; border-bottom: 1px dashed var(--border); cursor: pointer;
+    font-weight: 700; color: var(--text-main); text-align: right; transition: 0.2s; font-size: 0.9rem;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: rgba(79, 70, 229, 0.1); color: var(--primary); }
+/* ==========================================================================
+   Checkout & Map Styles (checkout.css) 
+   ========================================================================== */
+
+.checkout-merchant-card {
+    background: var(--bg-card) !important;
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    margin-bottom: 15px;
+    position: relative;
+    color: var(--text-main) !important;
+}
+
+/* ----------------------------------
+   زر تغيير الموقع في الفاتورة (جديد)
+------------------------------------- */
+.checkout-change-location-wrap {
+    background: rgba(79, 70, 229, 0.05);
+    border: 1px dashed rgba(79, 70, 229, 0.3);
+    border-radius: 12px;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.checkout-change-location-wrap p {
+    margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--text-main);
+}
+.btn-change-location {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--primary);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.btn-change-location:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* ----------------------------------
+   المنتجات داخل الفاتورة
+------------------------------------- */
+.checkout-item-row {
+    display: flex; align-items: center; gap: 12px; padding: 10px; border-bottom: 1px solid var(--border);
+}
+.checkout-item-row img {
+    width: 50px; height: 50px; border-radius: 8px; object-fit: cover;
+}
+.checkout-item-row div { flex: 1; }
+.checkout-item-row h4 { margin: 0; font-size: 0.9rem; }
+.checkout-item-row b { color: var(--primary); }
+
+.checkout-grand-total-box {
+    background: var(--bg-card) !important;
+    border: 2px solid rgba(16, 185, 129, 0.3);
+    border-radius: var(--radius-xl);
+    padding: 25px; text-align: center; margin-top: 25px;
+    color: var(--text-main) !important;
+}
+.checkout-grand-total-box span { display: block; font-size: 1rem; color: var(--text-muted); font-weight: 800; margin-bottom: 8px; }
+.checkout-grand-total-box strong { font-size: 2.2rem; color: var(--success); font-weight: 900; }
+
+/* ----------------------------------
+   الخريطة والمؤشر (Triangle Pin)
+------------------------------------- */
+.map-section { position: relative; margin-bottom: 15px;}
+#map-container {
+    height: 320px;
+    border-radius: var(--radius-xl);
+    border: 2px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-body);
+}
+
+/* شكل المثلث والمؤشر الجديد */
+.center-map-pin {
+    position: absolute; top: 50%; left: 50%; 
+    transform: translate(-50%, -100%);
+    z-index: 1000; pointer-events: none;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(0px 6px 4px rgba(0,0,0,0.4));
+}
+.map-is-moving .center-map-pin { 
+    transform: translate(-50%, -130%); 
+    filter: drop-shadow(0px 15px 5px rgba(0,0,0,0.2));
+}
+
+#find-me-btn, #lock-location-btn {
+    position: absolute; right: 10px; z-index: 401;
+    color: white; width: 45px; height: 45px;
+    border-radius: 50%; border: none; font-size: 1.2rem; cursor: pointer;
+    display: flex; justify-content: center; align-items: center;
+    transition: 0.3s;
+}
+#find-me-btn { top: 10px; background: var(--primary-gradient); box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4); }
+#lock-location-btn { top: 65px; background: var(--success); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); }
+
+#map-instruction {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 401;
+    background: var(--glass-bg); backdrop-filter: blur(10px); color: var(--text-main);
+    padding: 8px 16px; border-radius: 50px; font-size: 0.9rem; font-weight: 800;
+    pointer-events: none; box-shadow: var(--shadow-md); border: 1px solid var(--border);
+}
+/* ==========================================================================
+   تنسيق حقول الإدخال (الاسم والتفاصيل)
+   ========================================================================== */
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="url"],
+.form-group textarea {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 1rem;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 600;
+    color: var(--text-main);
+    background-color: var(--bg-body); /* خلفية هادئة مطابقة للتطبيق */
+    border: 2px solid var(--border);
+    border-radius: 12px; /* حواف دائرية حديثة */
+    transition: all 0.3s ease;
+    outline: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+/* تنسيق النص المؤقت (Placeholder) */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-muted);
+    font-weight: 500;
+    opacity: 0.7;
+}
+
+/* التأثير عند النقر على الحقل (Focus) */
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--primary);
+    background-color: var(--bg-card);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15); /* توهج ناعم بلون التطبيق الأساسي */
+}
+
+/* تأثير الاهتزاز عند إدخال اسم خاطئ (الذي برمجته في checkout.js) */
+@keyframes shakeError {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* صنف يضاف برمجياً عند الخطأ إذا أردت استخدامه مستقبلاً */
+.input-error {
+    border-color: var(--danger) !important;
+    animation: shakeError 0.3s ease-in-out;
+}
+/* تقييد أقصى ارتفاع للنوافذ لعدم تغطية الهيدر العلوي وإبقائها في طبقة أقل من الأشرطة */
+#checkout-modal, 
+#location-confirm-modal, 
+#location-permission-modal {
+    max-height: calc(100vh - 65px) !important;
+    z-index: 10000 !important; 
+}
+
+/* إبقاء التعتيم الأسود (الخلفية) تحت النوافذ وتحت الأشرطة */
+#checkout-modal-overlay, 
+#location-confirm-overlay, 
+#location-permission-overlay {
+    z-index: 9999 !important; 
+}
+
+/* إضافة حشوة سفلية لفوتر شاشات الدفع لرفع أزرار (إرسال الطلب وحفظ الموقع) فوق الشريط السفلي */
+#checkout-modal .sheet-footer, 
+#location-confirm-modal .sheet-footer, 
+#location-permission-modal .sheet-footer {
+    padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* ==========================================================================
+   6. تنسيق الشاشات الكبيرة (الكمبيوتر/التابلت الأفقي)
+   - تظهر النوافذ كنافذة عائمة بمنتصف الشاشة بدل ورقة تنزلق من الأسفل بكامل العرض
+   - تبقى مساحة واضحة أسفل الشاشة حتى لا يختفي الشريط السفلي (Bottom Nav)
+   ملاحظة: هذا التنسيق يفترض إن الشريط السفلي ارتفاعه تقريباً 65-70px وأنه
+   بعنصر ثابت (position: fixed) بأعلى z-index من التعتيم؛ إذا كان الشريط
+   السفلي مخفياً أصلاً بشاشات الكمبيوتر بتصميمك، تقدر تحذف قاعدة bottom أدناه.
+   ========================================================================== */
+@media (min-width: 992px) {
+    #checkout-modal-overlay,
+    #location-confirm-overlay,
+    #location-permission-overlay {
+        z-index: 9999 !important;
+    }
+
+    #checkout-modal,
+    #location-confirm-modal,
+    #location-permission-modal {
+        left: 50% !important;
+       top: 50% !important;
+       right: auto !important;
+       bottom: auto !important;
+       transform: translate(-50%, -48%) !important;
+       width: min(92vw, 560px) !important;
+        max-width: 560px !important;
+       max-height: calc(100vh - 90px) !important;
+        border-radius: var(--radius-xl) !important;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25) !important;
+        overflow-y: auto;
+        z-index: 10000 !important;
+       border-top: 1px solid var(--border) !important;
+    }
+
+    #checkout-modal:not(.open),
+    #location-confirm-modal:not(.open),
+    #location-permission-modal:not(.open) {
+       opacity: 0;
+       pointer-events: none;
+       transform: translate(-50%, -46%) !important;
+    }
+
+    #checkout-modal.open,
+    #location-confirm-modal.open,
+    #location-permission-modal.open {
+       opacity: 1;
+       pointer-events: auto;
+       transform: translate(-50%, -50%) !important;
+    }
+
+    #map-container { height: 380px; }
+
+    #checkout-modal .sheet-footer,
+    #location-confirm-modal .sheet-footer,
+    #location-permission-modal .sheet-footer {
+       padding-bottom: 20px !important;
+    }
+}

@@ -1,0 +1,1366 @@
+/* ========================================================
+   🎨 Nalsh Storefront Dynamic Design System & Theme Engine v5.0
+   تصميم نظيف فائق السلاسة: ألوان ديناميكية، دعم الوضعين الداكن والفاتح،
+   عرض مثالي للمنتجات بدون خطوط أو حدود عشوائية، وأيقونات سليمة 100%.
+   ======================================================== */
+
+/* ================================================
+   القيم الافتراضية للمتغيرات (Design Tokens)
+   ================================================ */
+:root {
+  /* الألوان الأساسية */
+  --theme-primary: #4F46E5;
+  --theme-primary-hover: #4338CA;
+  --theme-primary-glow: rgba(79, 70, 229, 0.15);
+  --theme-primary-gradient: linear-gradient(135deg, #4F46E5, #06b6d4);
+  --theme-accent: #14b8a6;
+
+  /* خلفيات الصفحة والكروت */
+  --theme-background: #f8fafc;
+  --theme-surface: #f1f5f9;
+  --theme-card-bg: #ffffff;
+  --theme-card-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+
+  /* النصوص */
+  --theme-text-primary: #0f172a;
+  --theme-text-secondary: #64748b;
+  --theme-border: rgba(0, 0, 0, 0.05);
+
+  /* الخطوط */
+  --theme-font-family: 'Tajawal', sans-serif;
+  --theme-base-size: 16px;
+  --theme-heading-weight: 700;
+  --theme-price-font-size: 1.15rem;
+
+  /* الأشكال والحواف */
+  --theme-card-radius: 20px;
+  --theme-button-radius: 14px;
+
+  /* الأشرطة */
+  --theme-navbar-bg: #ffffff;
+  --theme-navbar-text: #0f172a;
+  --theme-bottom-nav-bg: #ffffff;
+  --theme-bottom-nav-active: #4F46E5;
+  --theme-bottom-nav-inactive: #94A3B8;
+
+  /* البحث */
+  --theme-search-bg: #f1f5f9;
+  --theme-search-text: #0f172a;
+  --theme-search-placeholder: #94a3b8;
+
+  /* الأسعار والشارات */
+  --theme-price-color: #4F46E5;
+  --theme-old-price-color: #94A3B8;
+  --theme-discount-badge-bg: #ef4444;
+  --theme-discount-badge-text: #ffffff;
+  --theme-btn-primary-bg: #4F46E5;
+
+  /* التباعد */
+  --theme-section-gap: 1.5rem;
+}
+
+html.dark-mode {
+  --theme-border: rgba(255, 255, 255, 0.05);
+  --theme-card-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* ================================================
+   1. الخطوط بدون كسر الأيقونات (Safe Typography)
+   ================================================ */
+body,
+input,
+button,
+select,
+textarea,
+h1, h2, h3, h4, h5, h6,
+p, span:not([class*="fa"]),
+a:not([class*="fa"]),
+label {
+  font-family: var(--theme-font-family);
+}
+
+/* أحجام الخطوط المتجاوبة مع الشاشات */
+body {
+  font-size: var(--theme-base-size-mobile, var(--theme-base-size, 15px));
+}
+
+.dsc-name,
+.section-title,
+.store-group-title,
+.page-title {
+  font-size: var(--theme-heading-size-mobile, 1.15rem);
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: var(--theme-base-size-desktop, var(--theme-base-size, 17px));
+  }
+
+  .dsc-name,
+  .section-title,
+  .store-group-title,
+  .page-title {
+    font-size: var(--theme-heading-size-desktop, 1.45rem);
+  }
+}
+
+h1, h2, h3, h4, h5, h6,
+.section-title,
+.logo,
+.logo span,
+.dsc-name,
+.ultra-info h1,
+.product-card-title,
+.section-header h2,
+.store-group-title,
+.page-title,
+.iso-text-box h1 {
+  font-weight: var(--theme-heading-weight) !important;
+}
+
+/* شارات حالة توفر المخزون */
+.stock-badge-mini {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  z-index: 5;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stock-badge-mini.in-stock {
+  background: rgba(16, 185, 129, 0.92);
+  color: #ffffff;
+}
+
+.stock-badge-mini.low-stock {
+  background: rgba(245, 158, 11, 0.95);
+  color: #ffffff;
+}
+
+.stock-badge-mini.out-of-stock {
+  background: rgba(239, 68, 68, 0.95);
+  color: #ffffff;
+}
+
+/* حماية وتثبيت خطوط FontAwesome وتوجيه الفئات للخط المناسب */
+.fa-brands,
+.fab {
+  font-family: "Font Awesome 6 Brands", "Font Awesome 5 Brands", "FontAwesome" !important;
+  font-weight: 400 !important;
+}
+
+.fa-solid,
+.fas {
+  font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", "FontAwesome" !important;
+  font-weight: 900 !important;
+}
+
+.fa-regular,
+.far {
+  font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", "FontAwesome" !important;
+  font-weight: 400 !important;
+}
+
+.fa,
+[class*="fa-"] {
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  line-height: 1;
+}
+
+/* ================================================
+   2. الشريط العلوي والهيدر (Header & Navbar)
+   ================================================ */
+.header-container,
+.navbar,
+.navbar-scrolled,
+.isolated-header.scrolled {
+  background: var(--theme-navbar-bg) !important;
+}
+
+.logo,
+.logo span,
+.iso-text-box h1,
+.isolated-top .iso-text-box h1 {
+  color: var(--theme-navbar-text) !important;
+}
+
+.logo i {
+  color: var(--theme-primary) !important;
+  background: transparent !important;
+}
+
+.iso-avatar-box {
+  background: var(--theme-primary-gradient) !important;
+}
+
+.iso-text-box p {
+  color: var(--theme-primary) !important;
+}
+
+/* أنماط الأشرطة القابلة للتخصيص من الاستوديو */
+body[data-navbar-style="glass"] .header-container,
+body[data-navbar-style="glass"] .navbar {
+  background: color-mix(in srgb, var(--theme-navbar-bg) 78%, transparent) !important;
+  border-color: color-mix(in srgb, var(--theme-navbar-text) 12%, transparent) !important;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--theme-primary) 10%, transparent) !important;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+body[data-navbar-style="floating"] .header-container {
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: var(--theme-topbar-radius, 18px);
+  border-width: var(--theme-topbar-border-width, 1px);
+  box-shadow: 0 14px 30px color-mix(in srgb, var(--theme-text-primary) 12%, transparent) !important;
+  overflow: hidden;
+}
+
+body[data-navbar-style="floating"] .navbar {
+  border-bottom: 0;
+}
+
+body[data-navbar-style="neon"] .header-container,
+body[data-navbar-style="neon"] .navbar {
+  background: var(--theme-navbar-bg) !important;
+  border-color: color-mix(in srgb, var(--theme-primary) 45%, transparent) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--theme-primary) 18%, transparent),
+    0 8px 28px color-mix(in srgb, var(--theme-primary) 20%, transparent) !important;
+}
+
+body[data-navbar-style="neon"] .logo i,
+body[data-navbar-style="neon"] .nav-icon-btn:hover {
+  filter: drop-shadow(0 0 8px var(--theme-primary));
+}
+
+/* ================================================
+   3. شريط البحث (Clean Search Bar)
+   ================================================ */
+.modern-search-wrapper,
+.search-bar-container,
+.search-input-box,
+.search-box-wrapper {
+  background: var(--theme-search-bg) !important;
+  border-radius: var(--theme-button-radius) !important;
+  border: none !important;
+}
+
+.modern-search-input,
+.search-input,
+.search-input-box input,
+.search-box-wrapper input,
+.ultra-search-input {
+  background: transparent !important;
+  color: var(--theme-search-text) !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.modern-search-input::placeholder,
+.search-input::placeholder,
+.ultra-search-input::placeholder {
+  color: var(--theme-search-placeholder) !important;
+}
+
+/* ================================================
+   4. شريط الفئات والتصنيفات (Category Chips & Sub Navbar)
+   ================================================ */
+.sub-navbar,
+.cat-chips-strip,
+.categories-nav {
+  background: var(--theme-surface, var(--theme-navbar-bg, var(--theme-background))) !important;
+  border-bottom: 1px solid var(--theme-border) !important;
+}
+
+.cat-chip {
+  background: var(--theme-cat-chip-bg, var(--theme-surface)) !important;
+  color: var(--theme-cat-chip-text, var(--theme-text-primary)) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: var(--theme-button-radius) !important;
+}
+
+.cat-chip .cat-chip-label {
+  color: var(--theme-cat-chip-text, var(--theme-text-primary)) !important;
+}
+
+.cat-chip .cat-chip-icon {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: inherit !important;
+}
+
+.cat-chip.active {
+  background: var(--theme-cat-chip-active-bg, var(--theme-primary)) !important;
+  color: #ffffff !important;
+  border-color: var(--theme-cat-chip-active-bg, var(--theme-primary)) !important;
+}
+
+.cat-chip.active .cat-chip-label {
+  color: #ffffff !important;
+}
+
+.cat-chip.size-small .cat-chip-icon {
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 0.9rem !important;
+}
+.cat-chip.size-small {
+  font-size: 0.72rem !important;
+  padding: 4px 8px !important;
+}
+.cat-chip.size-large .cat-chip-icon {
+  width: 56px !important;
+  height: 56px !important;
+  font-size: 1.4rem !important;
+}
+.cat-chip.size-large {
+  font-size: 0.92rem !important;
+  padding: 10px 18px !important;
+}
+
+.cat-chips-grid-matrix {
+  display: grid;
+  gap: 10px;
+  padding: 10px 15px 20px;
+}
+.cat-chips-grid-matrix .cat-chip {
+  width: 100% !important;
+  justify-content: center;
+}
+
+.sub-nav-item {
+  background: var(--theme-cat-chip-bg, var(--theme-surface)) !important;
+  color: var(--theme-cat-chip-text, var(--theme-text-secondary)) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: var(--theme-button-radius) !important;
+}
+
+.sub-nav-item.active {
+  background: var(--theme-cat-chip-active-bg, var(--theme-primary)) !important;
+  color: #ffffff !important;
+  border-color: var(--theme-cat-chip-active-bg, var(--theme-primary)) !important;
+}
+
+.premium-cat-btn,
+.category-pill {
+  background: var(--theme-cat-chip-bg, var(--theme-surface)) !important;
+  color: var(--theme-cat-chip-text, var(--theme-text-primary)) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: var(--theme-button-radius) !important;
+  transition: all 0.2s ease;
+}
+
+.premium-cat-btn.active,
+.category-pill.active {
+  background: var(--theme-cat-chip-active-bg, var(--theme-primary)) !important;
+  color: #ffffff !important;
+  border-color: var(--theme-cat-chip-active-bg, var(--theme-primary)) !important;
+}
+
+/* عدم وضع أي خلفية أو حدود على حاوية الأقسام */
+.store-category-block {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin-bottom: var(--theme-section-gap);
+}
+
+/* ================================================
+   5. الشريط السفلي (Bottom Navigation)
+   ================================================ */
+.mobile-bar,
+.isolated-bottom-bar,
+.bottom-nav-bar {
+  background: var(--theme-bottom-nav-bg) !important;
+}
+
+.nav-item {
+  color: var(--theme-bottom-nav-inactive) !important;
+}
+
+.nav-item.active {
+  color: var(--theme-bottom-nav-active) !important;
+}
+
+.nav-item.active .nav-icon-container {
+  color: var(--theme-bottom-nav-active) !important;
+}
+
+.mobile-bar .nav-item,
+.isolated-bottom-bar .nav-item {
+  border-radius: var(--theme-bottom-item-radius, 999px);
+  gap: var(--theme-bottom-item-gap, 8px);
+}
+
+.mobile-bar .nav-item .nav-icon-container,
+.isolated-bottom-bar .nav-item .nav-icon-container {
+  font-size: var(--theme-bottom-icon-size, 1.2rem);
+}
+
+body[data-bottom-bar-style="glass"] .mobile-bar,
+body[data-bottom-bar-style="glass"] .isolated-bottom-bar,
+body[data-bottom-bar-style="glass"] .bottom-nav-bar {
+  background: color-mix(in srgb, var(--theme-bottom-nav-bg) 78%, transparent) !important;
+  border-color: color-mix(in srgb, var(--theme-bottom-nav-active) 16%, transparent) !important;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+body[data-bottom-bar-style="floating"] .mobile-bar,
+body[data-bottom-bar-style="floating"] .isolated-bottom-bar,
+body[data-bottom-bar-style="floating"] .bottom-nav-bar {
+  left: 12px;
+  right: 12px;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  width: auto;
+  border: var(--theme-bottom-bar-border-width, 1px) solid var(--theme-border) !important;
+  border-radius: var(--theme-bottom-bar-radius, 22px);
+  box-shadow: 0 16px 36px color-mix(in srgb, var(--theme-text-primary) 16%, transparent) !important;
+}
+
+body[data-bottom-bar-style="floating"] .nav-item.active {
+  background: color-mix(in srgb, var(--theme-bottom-nav-active) 12%, transparent);
+  border-radius: 14px;
+}
+
+@media (min-width: 768px) {
+  body[data-bottom-bar-layout="wide"] .mobile-bar,
+  body[data-bottom-bar-layout="wide"] .isolated-bottom-bar {
+    border-radius: min(var(--theme-bottom-bar-radius, 22px), 28px) !important;
+  }
+
+  body[data-bottom-bar-layout="wide"] .mobile-bar .nav-item,
+  body[data-bottom-bar-layout="wide"] .isolated-bottom-bar .nav-item {
+    flex: 1 1 0 !important;
+    justify-content: center;
+  }
+}
+
+body[data-bottom-bar-style="neon"] .mobile-bar,
+body[data-bottom-bar-style="neon"] .isolated-bottom-bar,
+body[data-bottom-bar-style="neon"] .bottom-nav-bar {
+  background: var(--theme-bottom-nav-bg) !important;
+  border-width: var(--theme-bottom-bar-border-width, 1px) !important;
+  border-color: color-mix(in srgb, var(--theme-bottom-nav-active) 45%, transparent) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--theme-bottom-nav-active) 16%, transparent),
+    0 12px 32px color-mix(in srgb, var(--theme-bottom-nav-active) 20%, transparent) !important;
+}
+
+body[data-bottom-bar-style="neon"] .nav-item.active .nav-icon-container {
+  filter: drop-shadow(0 0 8px var(--theme-bottom-nav-active));
+}
+
+body[data-navbar-style="minimal"] .header-container,
+body[data-navbar-style="minimal"] .navbar {
+  background: var(--theme-navbar-bg, var(--bg-card)) !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--theme-text-primary, #0f172a) 8%, transparent) !important;
+}
+
+body[data-navbar-style="minimal"] .icon-btn {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+body[data-navbar-style="island"] .header-container {
+  top: max(8px, env(safe-area-inset-top)) !important;
+  left: clamp(8px, 2vw, 24px) !important;
+  right: clamp(8px, 2vw, 24px) !important;
+  border-radius: clamp(16px, 3vw, 28px);
+  border: 1px solid color-mix(in srgb, var(--theme-primary, var(--primary)) 18%, transparent) !important;
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--theme-text-primary, #0f172a) 12%, transparent) !important;
+}
+
+body[data-navbar-style="island"] .navbar {
+  border-bottom: 0;
+}
+
+body[data-bottom-bar-style="minimal"] .mobile-bar,
+body[data-bottom-bar-style="minimal"] .isolated-bottom-bar {
+  background: var(--theme-bottom-nav-bg, var(--bg-card)) !important;
+  border-color: transparent !important;
+  box-shadow: 0 -4px 18px color-mix(in srgb, var(--theme-text-primary, #0f172a) 8%, transparent) !important;
+}
+
+body[data-bottom-bar-style="minimal"] .nav-item.active {
+  background: color-mix(in srgb, var(--theme-bottom-nav-active, var(--primary)) 10%, transparent);
+}
+
+body[data-bottom-bar-style="island"] .mobile-bar,
+body[data-bottom-bar-style="island"] .isolated-bottom-bar {
+  left: max(8px, env(safe-area-inset-left)) !important;
+  right: max(8px, env(safe-area-inset-right)) !important;
+  width: auto !important;
+  min-width: 0 !important;
+  transform: none !important;
+  border-radius: clamp(18px, 4vw, 30px) !important;
+  border: 1px solid color-mix(in srgb, var(--theme-bottom-nav-active, var(--primary)) 18%, transparent) !important;
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--theme-text-primary, #0f172a) 14%, transparent) !important;
+}
+
+body[data-bottom-bar-style="island"] .nav-item.active {
+  background: color-mix(in srgb, var(--theme-bottom-nav-active, var(--primary)) 14%, transparent);
+}
+
+@media (max-width: 380px) {
+  .mobile-bar .nav-item,
+  .isolated-bottom-bar .nav-item {
+    min-width: 0;
+    padding-inline: 4px;
+    font-size: 0.64rem;
+  }
+}
+
+/* ================================================
+   6. كروت وبطاقات المنتجات (Clean Product Cards)
+   ================================================ */
+.product-card-compact,
+.store-item-card,
+.premium-product-card,
+.ultra-card,
+.fast-card,
+.product-list-item,
+.theme-card {
+  background-color: var(--theme-card-bg) !important;
+  border-radius: var(--theme-card-radius) !important;
+  border: none !important;
+  box-shadow: var(--theme-card-shadow) !important;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.product-card-compact .compact-details {
+  padding: 12px 13px 13px;
+}
+
+.product-card-compact .p-title {
+  line-height: 1.45;
+  min-height: 2.9em;
+}
+
+.product-card-compact .compact-img-wrapper {
+  aspect-ratio: 1 / 1.08;
+}
+
+.product-card-compact .image-container-wrapper {
+  isolation: isolate;
+}
+
+.product-card-compact .image-container-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.14), transparent 42%, rgba(15,23,42,0.08));
+  pointer-events: none;
+  opacity: 0.65;
+  transition: opacity 0.25s ease;
+}
+
+.product-card-compact:hover .image-container-wrapper::after {
+  opacity: 0.95;
+}
+
+body[data-card-style="elevated"] .product-card-compact,
+body[data-card-style="elevated"] .fast-card {
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--theme-text-primary) 9%, transparent) !important;
+}
+
+body[data-card-style="elevated"] .product-card-compact:hover,
+body[data-card-style="elevated"] .fast-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 34px color-mix(in srgb, var(--theme-primary) 16%, transparent) !important;
+}
+
+body[data-card-style="bordered"] .product-card-compact:hover,
+body[data-card-style="bordered"] .fast-card:hover {
+  border-color: color-mix(in srgb, var(--theme-primary) 40%, var(--theme-border)) !important;
+}
+
+body[data-card-style="glass"] .product-card-compact .compact-details,
+body[data-card-style="glass"] .fast-card .compact-details {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--theme-card-bg) 82%, transparent), var(--theme-card-bg));
+}
+
+@media (hover: none) {
+  .product-card-compact:hover,
+  body[data-card-style="elevated"] .product-card-compact:hover {
+    transform: none;
+  }
+}
+
+/* أنماط الكروت الاختيارية فقط عند تفعيلها بالاستوديو */
+body[data-card-style="bordered"] .product-card-compact,
+body[data-card-style="bordered"] .store-item-card,
+body[data-card-style="bordered"] .ultra-card,
+body[data-card-style="bordered"] .fast-card {
+  border: 1px solid var(--theme-border) !important;
+  box-shadow: none !important;
+}
+
+body[data-card-style="flat"] .product-card-compact,
+body[data-card-style="flat"] .store-item-card,
+body[data-card-style="flat"] .ultra-card,
+body[data-card-style="flat"] .fast-card {
+  border: none !important;
+  box-shadow: none !important;
+  background-color: var(--theme-surface) !important;
+}
+
+body[data-card-style="glass"] .product-card-compact,
+body[data-card-style="glass"] .store-item-card,
+body[data-card-style="glass"] .ultra-card,
+body[data-card-style="glass"] .fast-card {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+html.dark-mode body[data-card-style="glass"] .product-card-compact,
+html.dark-mode body[data-card-style="glass"] .store-item-card,
+html.dark-mode body[data-card-style="glass"] .ultra-card,
+html.dark-mode body[data-card-style="glass"] .fast-card {
+  background: rgba(21, 30, 46, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* تفاعل hover على الكروت */
+body[data-card-hover="lift"] .product-card-compact,
+body[data-card-hover="lift"] .fast-card,
+body[data-card-hover="lift"] .store-item-card,
+body[data-card-hover="lift"] .bento-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease !important;
+}
+
+body[data-card-hover="lift"] .product-card-compact:hover,
+body[data-card-hover="lift"] .fast-card:hover,
+body[data-card-hover="lift"] .store-item-card:hover,
+body[data-card-hover="lift"] .bento-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+body[data-card-hover="glow"] .product-card-compact,
+body[data-card-hover="glow"] .fast-card,
+body[data-card-hover="glow"] .store-item-card,
+body[data-card-hover="glow"] .bento-card {
+  transition: box-shadow 0.25s ease, transform 0.25s ease !important;
+}
+
+body[data-card-hover="glow"] .product-card-compact:hover,
+body[data-card-hover="glow"] .fast-card:hover,
+body[data-card-hover="glow"] .store-item-card:hover,
+body[data-card-hover="glow"] .bento-card:hover {
+  box-shadow: 0 0 20px var(--theme-primary-glow) !important;
+}
+
+body[data-card-hover="scale"] .product-card-compact,
+body[data-card-hover="scale"] .fast-card,
+body[data-card-hover="scale"] .store-item-card,
+body[data-card-hover="scale"] .bento-card,
+body[data-card-hover="zoom"] .product-card-compact,
+body[data-card-hover="zoom"] .fast-card,
+body[data-card-hover="zoom"] .store-item-card,
+body[data-card-hover="zoom"] .bento-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease !important;
+}
+
+body[data-card-hover="scale"] .product-card-compact:hover,
+body[data-card-hover="scale"] .fast-card:hover,
+body[data-card-hover="scale"] .store-item-card:hover,
+body[data-card-hover="scale"] .bento-card:hover,
+body[data-card-hover="zoom"] .product-card-compact:hover,
+body[data-card-hover="zoom"] .fast-card:hover,
+body[data-card-hover="zoom"] .store-item-card:hover,
+body[data-card-hover="zoom"] .bento-card:hover {
+  transform: scale(1.03) !important;
+}
+
+/* ================================================
+   7. حاويات وشبكات العرض للمنتجات (Grid & Scrollers)
+   ================================================ */
+.horizontal-scroller,
+.product-row {
+  display: flex !important;
+  gap: 12px !important;
+  overflow-x: auto !important;
+  padding: 5px 20px 18px !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.horizontal-scroller::-webkit-scrollbar,
+.product-row::-webkit-scrollbar {
+  display: none !important;
+}
+
+.horizontal-scroller .product-card-compact,
+.horizontal-scroller .fast-card {
+  flex: 0 0 155px !important;
+  width: 155px !important;
+  min-width: 155px !important;
+  max-width: 180px !important;
+}
+
+@media (max-width: 767px) {
+  body[data-navbar-style="floating"] .header-container {
+    top: 6px;
+    left: 8px;
+    right: 8px;
+    border-radius: 16px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: clamp(10px, 2.8vw, 14px) !important;
+  }
+
+  .product-card-compact .compact-details {
+    padding: 10px;
+  }
+
+  .product-card-compact .p-title {
+    font-size: clamp(0.8rem, 3.4vw, 0.95rem);
+  }
+
+  .product-card-compact .price-row-mini {
+    gap: 6px;
+  }
+
+  .product-card-compact .modern-add-cart-btn-mini {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+  }
+}
+
+@media (min-width: 768px) {
+  .horizontal-scroller .product-card-compact,
+  .horizontal-scroller .fast-card {
+    flex: 0 0 190px !important;
+    width: 190px !important;
+    min-width: 190px !important;
+  }
+}
+
+.horizontal-scroller.multi-row-slider {
+  display: grid !important;
+  grid-auto-flow: column !important;
+  grid-template-rows: repeat(2, auto) !important;
+  gap: 12px !important;
+  overflow-x: auto !important;
+  padding: 5px 20px 18px !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* دعم تمدد الكروت داخل الشبكة وفق عدد الأعمدة */
+.product-grid {
+  display: grid !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.product-grid .product-card-compact,
+.product-grid .fast-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  flex: none !important;
+}
+
+/* صور الكروت بدون تشويه */
+.compact-img-wrapper,
+.sic-img-box,
+.ppc-img-box,
+.ultra-img-wrapper {
+  width: 100% !important;
+  position: relative !important;
+  background: transparent !important;
+  border-radius: var(--theme-card-radius) var(--theme-card-radius) 0 0;
+  overflow: hidden;
+}
+
+.compact-img-wrapper img,
+.sic-img-box img,
+.ppc-img-box img,
+.ultra-img-wrapper img,
+.fast-card .p-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+/* ================================================
+   8. الأسعار والشارات (Prices & Badges)
+   ================================================ */
+.modern-price-current,
+.product-price,
+.item-price,
+.price-tag,
+.ultra-price,
+.fast-card-price,
+.sic-price,
+.ppc-price,
+.pd-current-price,
+.p-price {
+  color: var(--theme-price-color) !important;
+  font-size: var(--theme-price-font-size);
+  font-weight: 900 !important;
+}
+
+.modern-price-current small,
+.p-currency {
+  color: var(--theme-primary) !important;
+  font-weight: 700;
+}
+
+.modern-price-old,
+.product-old-price,
+.item-old-price,
+.old-price-tag,
+.fast-card-old-price,
+.pd-old-price,
+.p-old-price {
+  color: var(--theme-old-price-color) !important;
+  text-decoration: line-through;
+}
+
+.discount-badge-mini,
+.product-badge,
+.discount-tag,
+.badge-discount,
+.sale-badge,
+.modern-discount-tag {
+  background: var(--theme-discount-badge-bg) !important;
+  color: var(--theme-discount-badge-text) !important;
+  border-radius: 9999px !important;
+  font-weight: 800;
+  border: none !important;
+}
+
+/* ================================================
+   9. الأزرار الرئيسية وإضافة للمنتج (Buttons & Add To Cart)
+   ================================================ */
+.modern-add-cart-btn-mini,
+.modern-add-cart-btn,
+.p-add-cart,
+.sic-add-btn,
+.ppc-add-btn,
+.ultra-add-btn,
+.ct-min-btn,
+.ct-bold-buy-btn,
+.ct-mag-btn,
+.ct-glass-btn,
+.ct-row-btn,
+.add-cart-circle-btn,
+.fast-card-btn,
+.quick-add-btn,
+.atc-btn,
+#main-buy-btn,
+#pd-add-to-cart-btn,
+#confirm-add-btn,
+.btn-action.primary,
+.add-to-cart-btn,
+.checkout-btn,
+.buy-now-btn,
+.primary-btn {
+  background: var(--theme-btn-primary-bg, var(--theme-primary)) !important;
+  color: var(--theme-btn-primary-text, #ffffff) !important;
+  border-radius: var(--theme-button-radius) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px var(--theme-primary-glow) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.modern-add-cart-btn-mini i,
+.modern-add-cart-btn i,
+.p-add-cart i,
+.sic-add-btn i,
+.ppc-add-btn i,
+.ultra-add-btn i,
+.ct-min-btn i,
+.ct-bold-buy-btn i,
+.ct-mag-btn i,
+.ct-glass-btn i,
+.ct-row-btn i,
+.add-cart-circle-btn i,
+.fast-card-btn i,
+.quick-add-btn i,
+.atc-btn i,
+#main-buy-btn i,
+#pd-add-to-cart-btn i,
+#confirm-add-btn i,
+.btn-action.primary i {
+  color: var(--theme-btn-primary-text, #ffffff) !important;
+}
+
+.modern-add-cart-btn-mini span,
+.modern-add-cart-btn span,
+.p-add-cart span,
+.ct-bold-buy-btn span,
+#main-buy-btn span,
+.btn-action.primary span {
+  color: var(--theme-btn-primary-text, #ffffff) !important;
+}
+
+.modern-add-cart-btn-mini:hover,
+.modern-add-cart-btn:hover,
+.p-add-cart:hover,
+.sic-add-btn:hover,
+.ppc-add-btn:hover,
+.ultra-add-btn:hover,
+.ct-min-btn:hover,
+.ct-bold-buy-btn:hover,
+.btn-action.primary:hover,
+#main-buy-btn:hover {
+  background: var(--theme-primary-hover, var(--theme-primary)) !important;
+  color: var(--theme-btn-primary-text, #ffffff) !important;
+  transform: scale(1.05) !important;
+}
+
+html.dark-mode .modern-add-cart-btn-mini,
+html.dark-mode .modern-add-cart-btn,
+html.dark-mode .p-add-cart,
+html.dark-mode .sic-add-btn,
+html.dark-mode .ppc-add-btn,
+html.dark-mode .ultra-add-btn,
+html.dark-mode .atc-btn,
+html.dark-mode .btn-action.primary,
+html.dark-mode .add-to-cart-btn,
+html.dark-mode #main-buy-btn,
+html.dark-mode #pd-add-to-cart-btn {
+  background: var(--theme-btn-primary-bg, var(--theme-primary)) !important;
+  color: var(--theme-btn-primary-text, #ffffff) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px var(--theme-primary-glow) !important;
+}
+
+body[data-button-style="pill"] .btn-action,
+body[data-button-style="pill"] .modern-add-cart-btn-mini,
+body[data-button-style="pill"] .modern-add-cart-btn,
+body[data-button-style="pill"] .p-add-cart {
+  border-radius: 9999px !important;
+}
+
+body[data-button-style="flat"] .btn-action,
+body[data-button-style="flat"] .modern-add-cart-btn-mini,
+body[data-button-style="flat"] .modern-add-cart-btn,
+body[data-button-style="flat"] .p-add-cart {
+  border-radius: 4px !important;
+}
+
+/* ================================================
+   10. كرت الهيرو الديناميكي للمتجر (Hero Card)
+   ================================================ */
+.dynamic-store-card {
+  border: none !important;
+  border-radius: var(--theme-card-radius) !important;
+  background: var(--theme-card-bg) !important;
+  box-shadow: var(--theme-card-shadow) !important;
+}
+
+.dsc-name {
+  color: var(--theme-text-primary) !important;
+}
+
+.dsc-bio {
+  color: var(--theme-text-secondary) !important;
+}
+
+.dsc-info-item {
+  color: var(--theme-text-secondary) !important;
+  border: none !important;
+}
+
+/* ================================================
+   11. النوافذ والشيتات والسلة والتنبيهات (Modals & Cart)
+   ================================================ */
+.modal-overlay,
+.modern-cart-overlay,
+.modern-fav-overlay,
+.modern-search-overlay {
+  background: var(--theme-modal-overlay, rgba(0, 0, 0, 0.65)) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+}
+
+/* الصفحات الكاملة (غير شفافة 100% في الوضعين) */
+.page-overlay,
+#search-page,
+#profile-page,
+#favorites-page,
+#auth-page {
+  background-color: var(--theme-background, var(--bg-body)) !important;
+  color: var(--theme-text-primary, var(--text-main)) !important;
+  opacity: 1 !important;
+}
+
+.page-overlay .page-header {
+  background-color: var(--theme-navbar-bg, var(--theme-card-bg)) !important;
+  border-bottom: 1px solid var(--theme-border) !important;
+  color: var(--theme-text-primary) !important;
+}
+
+.page-overlay .page-header h3,
+.page-overlay .page-header h2,
+.page-overlay .page-header .icon-btn {
+  color: var(--theme-text-primary) !important;
+}
+
+.page-overlay .page-body {
+  background-color: var(--theme-background, var(--bg-body)) !important;
+  color: var(--theme-text-primary) !important;
+}
+
+.confirmation-box,
+.cart-page,
+#cart-page,
+.modern-cart-panel,
+.modern-fav-panel,
+.product-details-modal,
+.bottom-sheet-content,
+.sheet-content,
+.modal-content {
+  background-color: var(--theme-modal-bg, var(--theme-card-bg)) !important;
+  color: var(--theme-text-primary) !important;
+  border-color: var(--theme-border) !important;
+}
+
+.cart-drag-handle,
+.fav-drag-handle,
+.sheet-drag-handle,
+.search-drag-handle {
+  background: var(--theme-modal-handle, var(--theme-border)) !important;
+}
+
+.cart-panel-header,
+.fav-panel-header,
+.search-panel-header {
+  border-bottom: 1px solid var(--theme-border) !important;
+}
+
+.cart-panel-header h3,
+.fav-panel-header h3 {
+  color: var(--theme-text-primary) !important;
+}
+
+.cart-close-btn,
+.fav-close-btn,
+.search-close-btn {
+  background: var(--theme-surface, var(--theme-card-bg)) !important;
+  border: 1px solid var(--theme-border) !important;
+  color: var(--theme-text-primary) !important;
+}
+
+.merchant-cart-group {
+  background: var(--theme-card-bg) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: var(--theme-card-radius) !important;
+}
+
+.merchant-cart-header {
+  background: var(--theme-surface) !important;
+  color: var(--theme-primary) !important;
+}
+
+.merchant-cart-footer {
+  background: var(--theme-background) !important;
+}
+
+.cart-item-card {
+  background: var(--theme-card-bg) !important;
+  color: var(--theme-text-primary) !important;
+}
+
+.cart-item-card .item-title,
+.cart-item-card .product-title {
+  color: var(--theme-text-primary) !important;
+}
+
+.cart-item-card .item-price,
+.cart-item-card .price {
+  color: var(--theme-price-color) !important;
+}
+
+.cart-img-container {
+  background: var(--theme-surface) !important;
+}
+
+.qty-controls {
+  background: var(--theme-surface) !important;
+  border: 1px solid var(--theme-border) !important;
+}
+
+.qty-btn {
+  background: var(--theme-card-bg) !important;
+  color: var(--theme-text-primary) !important;
+}
+
+.qty-controls span,
+.qty-value {
+  color: var(--theme-text-primary) !important;
+}
+
+.merchant-summary-row {
+  color: var(--theme-text-secondary) !important;
+}
+
+.merchant-summary-total {
+  color: var(--theme-primary) !important;
+  border-color: var(--theme-border) !important;
+}
+
+.checkout-merchant-card,
+.checkout-grand-total-box {
+  background: var(--theme-card-bg) !important;
+  color: var(--theme-text-primary) !important;
+  border-color: var(--theme-border) !important;
+}
+
+.checkout-row {
+  color: var(--theme-text-primary) !important;
+}
+
+.checkout-row .text-muted {
+  color: var(--theme-text-secondary) !important;
+}
+
+/* ================================================
+   12. صفحة البحث والنتائج (Search Page & Results)
+   ================================================ */
+#search-page,
+.modern-search-panel {
+  background: var(--theme-background, var(--bg-body)) !important;
+  color: var(--theme-text-primary) !important;
+}
+
+#search-input,
+.search-input-wrapper input {
+  background: var(--theme-surface, var(--theme-card-bg)) !important;
+  color: var(--theme-text-primary) !important;
+  border: 1.5px solid var(--theme-border) !important;
+  border-radius: var(--theme-button-radius) !important;
+}
+
+#search-input::placeholder,
+.search-input-wrapper input::placeholder {
+  color: var(--theme-text-secondary, var(--text-muted)) !important;
+}
+
+#voice-search-btn,
+.search-voice-btn {
+  color: var(--theme-primary) !important;
+}
+
+.search-pill,
+.search-chip {
+  background: var(--theme-card-bg) !important;
+  color: var(--theme-text-primary) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: var(--theme-button-radius) !important;
+}
+
+.search-pill i,
+.search-chip i {
+  color: var(--theme-text-secondary) !important;
+}
+
+.search-pill:hover,
+.search-chip:hover {
+  background: var(--theme-primary) !important;
+  color: #ffffff !important;
+  border-color: var(--theme-primary) !important;
+}
+
+.search-pill:hover i,
+.search-chip:hover i {
+  color: #ffffff !important;
+}
+
+.search-section-header,
+.search-section-label {
+  color: var(--theme-primary) !important;
+  border-color: var(--theme-border) !important;
+}
+
+.section-header-inline h4 {
+  color: var(--theme-text-primary) !important;
+}
+
+.search-label {
+  color: var(--theme-text-secondary) !important;
+}
+
+.store-match-card,
+.merchant-result-card,
+.merchant-match-card {
+  background: var(--theme-primary-gradient, linear-gradient(135deg, var(--theme-primary), var(--theme-accent))) !important;
+  color: #ffffff !important;
+  border-radius: var(--theme-card-radius) !important;
+}
+
+/* ================================================
+   13. صفحة طلباتي وتتبع الشحنات (Orders & Tracking)
+   ================================================ */
+#profile-page {
+  background-color: var(--theme-background, var(--bg-body)) !important;
+  color: var(--theme-text-primary) !important;
+}
+
+.profile-page-user-header {
+  background: var(--theme-primary-gradient, linear-gradient(135deg, var(--theme-primary), var(--theme-accent))) !important;
+  color: #ffffff !important;
+  border-radius: var(--theme-card-radius) !important;
+}
+
+.user-initial-large {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+#user-orders-tabs {
+  background: transparent !important;
+}
+
+#user-orders-tabs .sub-nav-item {
+  background: var(--theme-card-bg) !important;
+  color: var(--theme-text-secondary) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: var(--theme-button-radius) !important;
+}
+
+#user-orders-tabs .sub-nav-item.active {
+  background: var(--theme-primary) !important;
+  color: #ffffff !important;
+  border-color: var(--theme-primary) !important;
+}
+
+.order-group-wrapper,
+.order-merchant-card,
+.track-card-new {
+  background: var(--theme-card-bg) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: var(--theme-card-radius) !important;
+  color: var(--theme-text-primary) !important;
+}
+
+.order-group-header {
+  background: var(--theme-primary-gradient, linear-gradient(135deg, var(--theme-primary), var(--theme-accent))) !important;
+  color: #ffffff !important;
+  border-radius: var(--theme-card-radius) var(--theme-card-radius) 0 0 !important;
+}
+
+.order-merchant-header {
+  border-bottom: 2px dashed var(--theme-border) !important;
+}
+
+.order-merchant-header h4 {
+  color: var(--theme-primary) !important;
+}
+
+.order-item-modern {
+  background: var(--theme-surface) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: var(--theme-button-radius) !important;
+}
+
+.order-item-modern .item-img {
+  background: var(--theme-card-bg) !important;
+  border: 1px solid var(--theme-border) !important;
+}
+
+.order-item-modern .item-details h5 {
+  color: var(--theme-text-primary) !important;
+}
+
+.order-item-modern .item-variant {
+  background: rgba(79, 70, 229, 0.12) !important;
+  color: var(--theme-primary) !important;
+}
+
+.order-item-modern .qty {
+  color: var(--theme-text-secondary) !important;
+}
+
+.order-item-modern .price {
+  color: var(--theme-price-color) !important;
+}
+
+.order-financials {
+  background: var(--theme-surface) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: var(--theme-button-radius) !important;
+}
+
+.fin-row {
+  color: var(--theme-text-secondary) !important;
+}
+
+.fin-row.total {
+  color: var(--theme-primary) !important;
+  border-top: 1px dashed var(--theme-border) !important;
+}
+
+.order-timeline::before {
+  background: var(--theme-border) !important;
+}
+
+.timeline-progress {
+  background: var(--theme-primary) !important;
+}
+
+.timeline-step .timeline-icon {
+  background: var(--theme-surface) !important;
+  border: 4px solid var(--theme-border) !important;
+  color: var(--theme-text-secondary) !important;
+}
+
+.timeline-step.active .timeline-icon {
+  background: var(--theme-primary) !important;
+  border-color: var(--theme-primary-glow) !important;
+  color: #ffffff !important;
+}
+
+.timeline-label {
+  color: var(--theme-text-secondary) !important;
+}
+
+.timeline-step.active .timeline-label {
+  color: var(--theme-text-primary) !important;
+}
+
+.skeleton-card {
+  background: var(--theme-card-bg) !important;
+  border: 1px solid var(--theme-border) !important;
+}
+
+#toast.success,
+.toast.success {
+  background-color: var(--theme-toast-success) !important;
+  color: #ffffff !important;
+}
+
+#toast.error,
+.toast.error {
+  background-color: var(--theme-toast-error) !important;
+  color: #ffffff !important;
+}
+
+#toast.warning,
+.toast.warning {
+  background-color: var(--theme-toast-warning) !important;
+  color: #ffffff !important;
+}
