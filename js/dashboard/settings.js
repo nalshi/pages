@@ -172,49 +172,32 @@
         if (!token) throw new Error('بيانات الدخول مفقودة.');
 
         try {
-            if (window.dashboardSocketReady || window.dashboardReadState.settings) {
+            // 1. إذا كانت الإعدادات متوفرة في الذاكرة بالفعل أو تم استقبالها من الاتصال اللحظي
+            if (window.currentMerchantData && (window.currentMerchantData.store_name || window.currentMerchantData.id)) {
                 window.applySettingsToUI(window.currentMerchantData);
                 return;
             }
-            window.dashboardReadState.settings = true;
-            const cachedSettings = localStorage.getItem('merchant_settings_cache');
-            const cacheTimestamp = parseInt(localStorage.getItem('merchant_settings_cache_ts') || '0');
-            const CACHE_MAX_AGE_MS = 10 * 60 * 1000;
 
-            if (cachedSettings && (Date.now() - cacheTimestamp) < CACHE_MAX_AGE_MS) {
+            // 2. فحص الكاش المحلي في المتصفح (localStorage)
+            const cachedSettings = localStorage.getItem('merchant_settings_cache');
+            if (cachedSettings) {
                 try {
                     const cached = JSON.parse(cachedSettings);
-                    window.currentMerchantData = cached;
-                    window.applySettingsToUI(window.currentMerchantData);
+                    if (cached && (cached.store_name || cached.id)) {
+                        window.currentMerchantData = cached;
+                        window.applySettingsToUI(window.currentMerchantData);
+                        return;
+                    }
                 } catch(e) {}
+            }
 
-                // ⭐ إذا كان الاتصال اللحظي شغالاً أو جارياً، لا نرسل طلب HTTP مكرر للخادم إطلاقاً
-                // لأن الـ WebSocket يرسل الإعدادات واللقطة تلقائياً.
-                if (window.dashboardSocketReady || window.dashboardSharedWorkerActive) {
-                    return;
-                }
-
-                setTimeout(async () => {
-                    if (window.dashboardSocketReady || window.dashboardSharedWorkerActive) return;
-                    try {
-                        const res = await window.apiReq('get_merchant_settings', {}, 'POST', false, true);
-                        if (res && res.status === 'success' && res.data) {
-                            window.currentMerchantData = res.data;
-                            if (typeof window.currentMerchantData.settings === 'string') {
-                                try { window.currentMerchantData.settings = JSON.parse(window.currentMerchantData.settings); }
-                                catch (e) { window.currentMerchantData.settings = {}; }
-                            } else if (!window.currentMerchantData.settings) {
-                                window.currentMerchantData.settings = {};
-                            }
-                            localStorage.setItem('merchant_settings_cache', JSON.stringify(window.currentMerchantData));
-                            localStorage.setItem('merchant_settings_cache_ts', Date.now().toString());
-                            window.applySettingsToUI(window.currentMerchantData);
-                        }
-                    } catch (e) { }
-                }, 2000);
+            // 3. إذا كان الاتصال اللحظي (WebSocket) متصلاً أو جاري الاتصال، لا ترسل طلب HTTP
+            // لأن اللقطة (Snapshot) ستصل تلقائياً وتحتوي على الإعدادات الكاملة
+            if (window.dashboardSocketReady || window.dashboardSharedWorkerActive || window.isDashboardRealtimeReady?.()) {
                 return;
             }
 
+            // 4. المسار الأخير فقط: طلب الخادم في حال عدم وجود كاش وعدم وجود اتصال لحظي إطلاقاً
             const res = await window.apiReq('get_merchant_settings', {}, 'POST', false, true);
             if (res && res.status === 'success' && res.data) {
                 window.currentMerchantData = res.data;
