@@ -659,7 +659,12 @@
             window.AppStore.setOrders('archived', message.archivedOrders);
             window.dashboardReadState.archivedOrders = true;
         }
-        if (Array.isArray(message.categories)) window.flatCategoriesList = message.categories;
+        if (Array.isArray(message.categories)) {
+            window.flatCategoriesList = message.categories;
+            try {
+                localStorage.setItem('merchant_categories_cache', JSON.stringify(message.categories));
+            } catch(e) {}
+        }
         if (message.settings && typeof message.settings === 'object') {
             window.dashboardReadState.settings = true;
             window.currentMerchantData = message.settings;

@@ -69,19 +69,46 @@
 
     // ===== جلب شجرة الفئات من الخادم =====
     window.fetchCategoryTree = async function () {
-        if (typeof window.isDashboardRealtimeReady === 'function'
-            && window.isDashboardRealtimeReady()
-            && Array.isArray(window.flatCategoriesList)) {
+        // 1. إذا كانت محملة بالذاكرة بالفعل
+        if (Array.isArray(window.flatCategoriesList) && window.flatCategoriesList.length > 0) {
             window.initDynamicCategories();
             if (typeof window.refreshProductCategoryNames === 'function') {
                 window.refreshProductCategoryNames();
             }
             return;
         }
+
+        // 2. محاولة القراءة من الكاش المحلي (localStorage) فوراً دون أي طلب للخادم
+        try {
+            const cached = localStorage.getItem('merchant_categories_cache');
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    window.flatCategoriesList = parsed;
+                    window.initDynamicCategories();
+                    if (typeof window.refreshProductCategoryNames === 'function') {
+                        window.refreshProductCategoryNames();
+                    }
+                    return;
+                }
+            }
+        } catch (_) {}
+
+        // 3. إذا كان الاتصال اللحظي شغالاً أو جارياً، ننتظره لأنه يرسل الفئات في اللقطة ولا داعي لطلب HTTP
+        if (typeof window.isDashboardRealtimeReady === 'function' && window.isDashboardRealtimeReady()) {
+            return;
+        }
+        if (window.dashboardSocketReady || window.dashboardSharedWorkerActive) {
+            return;
+        }
+
         try {
             const res = await window.apiReq('get_categories_tree', {}, 'POST', false, true);
             if (res && res.status === 'success' && Array.isArray(res.data)) {
                 window.flatCategoriesList = res.data;
+                try {
+                    localStorage.setItem('merchant_categories_cache', JSON.stringify(res.data));
+                } catch (_) {}
             } else {
                 window.flatCategoriesList = [];
             }

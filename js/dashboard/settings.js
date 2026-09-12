@@ -188,7 +188,14 @@
                     window.applySettingsToUI(window.currentMerchantData);
                 } catch(e) {}
 
+                // ⭐ إذا كان الاتصال اللحظي شغالاً أو جارياً، لا نرسل طلب HTTP مكرر للخادم إطلاقاً
+                // لأن الـ WebSocket يرسل الإعدادات واللقطة تلقائياً.
+                if (window.dashboardSocketReady || window.dashboardSharedWorkerActive) {
+                    return;
+                }
+
                 setTimeout(async () => {
+                    if (window.dashboardSocketReady || window.dashboardSharedWorkerActive) return;
                     try {
                         const res = await window.apiReq('get_merchant_settings', {}, 'POST', false, true);
                         if (res && res.status === 'success' && res.data) {
