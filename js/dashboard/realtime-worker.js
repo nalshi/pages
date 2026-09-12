@@ -24,7 +24,10 @@ let pingInterval = null;
 let isExplicitlyClosed = false;
 // منع إرسال init مكرر: آخر وقت تمت معالجة init لنفس التاجر
 let lastInitTimestamp = 0;
-const INIT_DEBOUNCE_MS = 3000; // 3 ثواني
+// ⭐ إصلاح: رُفع من 3000 → 30000 لتغطية إعادة التحميل البطيئة أو تبديل التبويبات؛
+// الـ debounce يمنع اعتبار كل reload تاجراً جديداً وفتح WS جديد مع snapshot جديدة،
+// طالما نفس التاجر والـ token لم يتغيّرا.
+const INIT_DEBOUNCE_MS = 30_000; // 30 ثانية
 
 function broadcast(msg) {
     const data = typeof msg === 'string' ? msg : JSON.stringify(msg);
@@ -122,12 +125,18 @@ function connectWebSocket() {
             lastSnapshot = msg;
             lastSnapshotTimestamp = Date.now();
             updateStatus('connected', 'متصل لحظياً');
-            broadcast({ type: 'snapshot', data: msg, snapshotAge: 0 });
+            broadcast({ type: 'snapshot', data: msg, snapshotAge: msg._snapshot_age_ms || 0 });
         } else if (msg.event === 'session_resume') {
-            // الـ DO يقول: البيانات حديثة، استخدم الكاش المحلي
             updateStatus('connected', 'متصل لحظياً (استئناف جلسة)');
-            // أرسل للـ frontend ليستخدم الـ sessionStorage مباشرة
-            broadcast({ type: 'session_resume', data: msg });
+            // إذا جاءت مع بيانات كاملة (منتجات)، عاملها كـ snapshot
+            if (Array.isArray(msg.products)) {
+                lastSnapshot = { ...msg, event: 'initial_load' };
+                lastSnapshotTimestamp = Date.now();
+                broadcast({ type: 'snapshot', data: lastSnapshot, snapshotAge: msg._snapshot_age_ms || 0 });
+            } else {
+                // بدون بيانات → أرسل للـ frontend ليستخدم الكاش المحلي
+                broadcast({ type: 'session_resume', data: msg });
+            }
         } else if (msg.event === 'error') {
             updateStatus('disconnected', msg.message || 'خطأ في الاتصال اللحظي');
             broadcast({ type: 'error', message: msg.message });

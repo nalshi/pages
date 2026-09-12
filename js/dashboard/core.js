@@ -801,13 +801,45 @@
             return Promise.resolve(true);
         }
 
+        // ⭐ إصلاح: إذا كان SharedWorker نشطاً والـ WS مفتوح داخله، لا نُرسل init جديد —
+        // حتى لو لم تكتمل الـ snapshot بعد — نعود لنفس الوعد القديم وننتظره.
+        if (window.dashboardSharedWorkerActive && window.dashboardSharedWorkerInitialized) {
+            return window.dashboardDataReady || Promise.resolve(false);
+        }
+
         // إذا كان هناك وعد قيد الانتظار (اتصال جارٍ الآن)، أعد نفس الوعد
         if (window.dashboardDataReady && !window.dashboardSnapshotLoaded && window.dashboardSharedWorkerInitialized) {
             return window.dashboardDataReady;
         }
 
         const scheme = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const socketUrl = `${scheme}//${window.location.host}/api/worker/ws?merchant_id=${encodeURIComponent(merchantId)}&token=${encodeURIComponent(token)}`;
+
+        // ⭐ إصلاح أمني: دالة مساعدة تطلب ticket مؤقت (30 ثانية) بدل إرسال JWT في WS URL.
+        // الـ JWT يُرسل مرة واحدة فقط في Authorization Header (HTTPS مشفّر)،
+        // والـ WS URL يحمل ticket UUID + merchant_id فقط (لا يوجد JWT مكشوف).
+        window.fetchWsTicket = async function (tok, mid) {
+            try {
+                const resp = await fetch('/api/worker/ws/ticket', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${tok}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (!resp.ok) return null;
+                const data = await resp.json();
+                return data.ticket || null;
+            } catch (_) {
+                return null;
+            }
+        };
+
+        // بناء socketUrl يعتمد على ticket (يُبنى لاحقاً بعد جلب الـ ticket)
+        // نمرر دالة بناء الـ URL بدل قيمة ثابتة حتى تكون الـ ticket طازجة دائماً
+        const buildSocketUrl = (ticket) =>
+            `${scheme}//${window.location.host}/api/worker/ws?ticket=${encodeURIComponent(ticket)}&m=${encodeURIComponent(merchantId)}`;
+        // fallback للاتصال المباشر إذا فشل جلب الـ ticket (نفس المسار القديم مؤقتاً)
+        const fallbackSocketUrl = `${scheme}//${window.location.host}/api/worker/ws?merchant_id=${encodeURIComponent(merchantId)}&token=${encodeURIComponent(token)}`;
 
         // 🌟 1. المسار الفائق: SharedWorker للاستمرار عبر التحديثات والتبويبات
         if (typeof window.SharedWorker === 'function' && !window.dashboardSocketForceDirect) {
@@ -888,12 +920,26 @@
                     });
                 }
 
-                // إرسال init للـ SharedWorker (الـ Worker يُفرّق بين init جديد ومكرر)
-                window.dashboardSharedWorkerPort.postMessage({
-                    action: 'init',
-                    socketUrl,
-                    merchantId,
-                    token
+                // ⭐ إصلاح أمني: جلب ticket مؤقت أولاً ثم إرسال URL نظيف للـ SharedWorker
+                // الـ SharedWorker يتلقى فقط socketUrl (بدون JWT) + merchantId كـ hint
+                window.fetchWsTicket(token, merchantId).then((ticket) => {
+                    const socketUrl = ticket
+                        ? buildSocketUrl(ticket)
+                        : fallbackSocketUrl;
+                    window.dashboardSharedWorkerPort.postMessage({
+                        action: 'init',
+                        socketUrl,
+                        merchantId,
+                        token: '' // ⭐ لا نُمرر الـ token للـ Worker — الـ ticket يكفي
+                    });
+                }).catch(() => {
+                    // في حال فشل الـ fetch، استخدم المسار القديم مؤقتاً
+                    window.dashboardSharedWorkerPort.postMessage({
+                        action: 'init',
+                        socketUrl: fallbackSocketUrl,
+                        merchantId,
+                        token
+                    });
                 });
                 window.dashboardSharedWorkerInitialized = true;
 
@@ -922,87 +968,100 @@
         }
 
         window.dashboardDataReady = new Promise((resolve) => {
-            const socket = new WebSocket(socketUrl);
-            let settled = false;
-            const handshakeTimer = setTimeout(() => {
-                if (!settled) {
-                    if (typeof window.ilsConnectionState === 'function') {
-                        window.ilsConnectionState('error', 'بانتظار الاتصال اللحظي الآمن...');
+            // ⭐ إصلاح أمني: جلب ticket أولاً للاتصال المباشر أيضاً
+            window.fetchWsTicket(token, merchantId).then((ticket) => {
+                const directSocketUrl = ticket ? buildSocketUrl(ticket) : fallbackSocketUrl;
+                const socket = new WebSocket(directSocketUrl);
+                let settled = false;
+                const handshakeTimer = setTimeout(() => {
+                    if (!settled) {
+                        if (typeof window.ilsConnectionState === 'function') {
+                            window.ilsConnectionState('error', 'بانتظار الاتصال اللحظي الآمن...');
+                        }
+                        window.setDashboardSocketStatus('disconnected', 'انتهت مهلة الاتصال');
+                        finish(false);
+                        if (socket.readyState === WebSocket.CONNECTING || socket.readyState === WebSocket.OPEN) {
+                            socket.close(1011, 'تجاوز مهلة اللقطة');
+                        }
                     }
-                    window.setDashboardSocketStatus('disconnected', 'انتهت مهلة الاتصال');
+                }, 12000);
+                const finish = (value) => {
+                    if (!settled) {
+                        settled = true;
+                        clearTimeout(handshakeTimer);
+                        resolve(value);
+                    }
+                };
+
+                window.dashboardSocket = socket;
+                socket.addEventListener('open', () => {
+                    if (socket !== window.dashboardSocket || window.dashboardSocketStop) {
+                        socket.close(1000, 'اتصال قديم');
+                        return;
+                    }
+                    window.setDashboardSocketStatus('connecting', 'تم فتح القناة، بانتظار البيانات...');
+                    window.dashboardSocketReady = true;
+                    window.dashboardSocketReconnectAttempt = 0;
+                    socket.send(JSON.stringify({ type: 'ping' }));
+                    if (window.dashboardSocketPingTimer) clearInterval(window.dashboardSocketPingTimer);
+                    window.dashboardSocketPingTimer = setInterval(() => {
+                        if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: 'ping' }));
+                    }, 20000);
+                });
+
+                socket.addEventListener('message', (event) => {
+                    let message;
+                    try { message = JSON.parse(event.data); } catch (e) { return; }
+                    if (message.type === 'pong') return;
+                    if (message.event === 'initial_load') {
+                        window.processDashboardSnapshot(message);
+                        finish(true);
+                    } else if (message.event === 'error') {
+                        if (typeof window.ilsConnectionState === 'function') {
+                            window.ilsConnectionState('error', 'تعذر تحميل الاتصال اللحظي');
+                        }
+                        window.setDashboardSocketStatus('disconnected', message.message || 'فشل تحميل بيانات اللوحة');
+                        finish(false);
+                    } else {
+                        window.processDashboardEvent(message);
+                    }
+                });
+
+                socket.addEventListener('error', () => {
+                    if (socket !== window.dashboardSocket) return;
+                    window.setDashboardSocketStatus('disconnected', 'رفض الخادم اتصال WebSocket');
                     finish(false);
-                    if (socket.readyState === WebSocket.CONNECTING || socket.readyState === WebSocket.OPEN) {
-                        socket.close(1011, 'تجاوز مهلة اللقطة');
+                });
+
+                socket.addEventListener('close', (event) => {
+                    if (socket !== window.dashboardSocket) return;
+                    window.dashboardSocketReady = false;
+                    // ⭐ إصلاح: لا تصفّر dashboardSnapshotLoaded إذا كان SharedWorker نشطاً —
+                    // الـ SharedWorker هو مصدر الحقيقة الفعلي؛ إغلاق هذا الـ socket المباشر
+                    // لا يعني ضياع البيانات (الـ Worker يبقى حياً عبر reload).
+                    if (!window.dashboardSharedWorkerActive) {
+                        window.dashboardSnapshotLoaded = false;
+                        window.dashboardConnectionChecked = false;
                     }
-                }
-            }, 12000);
-            const finish = (value) => {
-                if (!settled) {
-                    settled = true;
-                    clearTimeout(handshakeTimer);
-                    resolve(value);
-                }
-            };
-
-            window.dashboardSocket = socket;
-            socket.addEventListener('open', () => {
-                if (socket !== window.dashboardSocket || window.dashboardSocketStop) {
-                    socket.close(1000, 'اتصال قديم');
-                    return;
-                }
-                window.setDashboardSocketStatus('connecting', 'تم فتح القناة، بانتظار البيانات...');
-                window.dashboardSocketReady = true;
-                window.dashboardSocketReconnectAttempt = 0;
-                socket.send(JSON.stringify({ type: 'ping' }));
-                if (window.dashboardSocketPingTimer) clearInterval(window.dashboardSocketPingTimer);
-                window.dashboardSocketPingTimer = setInterval(() => {
-                    if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: 'ping' }));
-                }, 20000);
-            });
-
-            socket.addEventListener('message', (event) => {
-                let message;
-                try { message = JSON.parse(event.data); } catch (e) { return; }
-                if (message.type === 'pong') return;
-                if (message.event === 'initial_load') {
-                    window.processDashboardSnapshot(message);
-                    finish(true);
-                } else if (message.event === 'error') {
-                    if (typeof window.ilsConnectionState === 'function') {
-                        window.ilsConnectionState('error', 'تعذر تحميل الاتصال اللحظي');
+                    const reason = event.reason || (event.code === 1000 ? 'تم إغلاق الاتصال' : `رمز ${event.code}`);
+                    window.setDashboardSocketStatus(navigator.onLine ? 'disconnected' : 'offline', reason);
+                    if (window.dashboardSocketPingTimer) {
+                        clearInterval(window.dashboardSocketPingTimer);
+                        window.dashboardSocketPingTimer = null;
                     }
-                    window.setDashboardSocketStatus('disconnected', message.message || 'فشل تحميل بيانات اللوحة');
-                    finish(false);
-                } else {
-                    window.processDashboardEvent(message);
-                }
-            });
-
-            socket.addEventListener('error', () => {
-                if (socket !== window.dashboardSocket) return;
-                window.setDashboardSocketStatus('disconnected', 'رفض الخادم اتصال WebSocket');
-                finish(false);
-            });
-
-            socket.addEventListener('close', (event) => {
-                if (socket !== window.dashboardSocket) return;
-                window.dashboardSocketReady = false;
-                window.dashboardSnapshotLoaded = false;
-                window.dashboardConnectionChecked = false;
-                const reason = event.reason || (event.code === 1000 ? 'تم إغلاق الاتصال' : `رمز ${event.code}`);
-                window.setDashboardSocketStatus(navigator.onLine ? 'disconnected' : 'offline', reason);
-                if (window.dashboardSocketPingTimer) {
-                    clearInterval(window.dashboardSocketPingTimer);
-                    window.dashboardSocketPingTimer = null;
-                }
-                if (!settled) finish(false);
-                if (!window.dashboardSocketStop && !window.dashboardSocketPaused && navigator.onLine && document.visibilityState === 'visible') {
-                    const attempt = (window.dashboardSocketReconnectAttempt || 0) + 1;
-                    window.dashboardSocketReconnectAttempt = attempt;
-                    window.dashboardSocketReconnectTimer = setTimeout(() => {
-                        window.connectDashboardSocket();
-                    }, Math.min(25000, 1000 * Math.pow(1.8, Math.min(attempt - 1, 5))));
-                }
+                    if (!settled) finish(false);
+                    if (!window.dashboardSocketStop && !window.dashboardSocketPaused && navigator.onLine && document.visibilityState === 'visible') {
+                        const attempt = (window.dashboardSocketReconnectAttempt || 0) + 1;
+                        window.dashboardSocketReconnectAttempt = attempt;
+                        window.dashboardSocketReconnectTimer = setTimeout(() => {
+                            window.connectDashboardSocket();
+                        }, Math.min(25000, 1000 * Math.pow(1.8, Math.min(attempt - 1, 5))));
+                    }
+                });
+            }).catch(() => {
+                // فشل جلب الـ ticket — أبلغ بفشل الاتصال
+                window.setDashboardSocketStatus('disconnected', 'فشل تجهيز الاتصال الآمن');
+                resolve(false);
             });
         });
 
